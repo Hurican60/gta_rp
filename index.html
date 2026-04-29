@@ -11,6 +11,7 @@
 :root {
   --gold: #c9a84c; --gold-light: #e8c97a; --gold-dark: #8a6a1f;
   --parchment: #f0e6cc; --muted: #7a6a4f; --deep: #0a0804;
+  --blood: #7a1f1f;
 }
 body { background:#0a0804; font-family:'IM Fell English',serif; color:var(--parchment); min-height:100vh; overflow-x:hidden; }
 .bg-ambiance { position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(ellipse at 15% 40%,rgba(122,31,31,.07) 0%,transparent 55%), radial-gradient(ellipse at 85% 40%,rgba(31,61,122,.07) 0%,transparent 55%); }
@@ -32,34 +33,25 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
 
 .content-area { flex:1; padding:2rem; overflow-y: auto; }
 
-/* ZONE D'ÉCRITURE MAGIQUE (Texte + Images) */
 .course-editor { 
   width:100%; min-height:350px; background:rgba(10,8,4,0.6); 
   border:1px solid rgba(201,168,76,0.3); padding:1.5rem; 
   color:var(--parchment); font-family:inherit; font-size:1.1rem; 
   outline:none; line-height: 1.6; border-radius: 4px;
-  transition: border 0.3s;
 }
-.course-editor:focus { border-color: var(--gold); background:rgba(10,8,4,0.8); }
-.course-editor.dragover { border: 2px dashed var(--gold); background: rgba(201,168,76,0.05); }
+.course-editor img { max-width: 80%; height: auto; display: block; margin: 1.5rem auto; border: 1px solid var(--gold-dark); border-radius: 3px; }
 
-/* Style des images insérées */
-.course-editor img, .course-preview img { 
-  max-width: 80%; height: auto; display: block; 
-  margin: 1.5rem auto; border: 1px solid var(--gold-dark); 
-  box-shadow: 0 5px 15px rgba(0,0,0,0.7); border-radius: 3px;
-}
-
-.page-manager { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.page-manager { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
 .page-tab { padding: 6px 14px; background: rgba(201, 168, 76, 0.05); border: 1px solid rgba(201, 168, 76, 0.2); color: var(--muted); cursor: pointer; font-size: 0.8rem; border-radius: 3px; }
 .page-tab.active { background: rgba(201, 168, 76, 0.2); color: var(--gold-light); border-color: var(--gold); }
 
 .preview-title { margin-top: 3rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; letter-spacing: 2px; }
-.course-preview { background: rgba(255,255,255,0.01); padding: 2rem; border-radius: 4px; min-height: 100px; color:#e0d5ba; border: 1px solid rgba(201,168,76,0.05); margin-top: 1rem; transition: 0.5s; }
-.save-flash { background: rgba(201, 168, 76, 0.1) !important; border-color: var(--gold) !important; }
+.course-preview { background: rgba(255,255,255,0.01); padding: 2rem; border-radius: 4px; min-height: 100px; color:#e0d5ba; border: 1px solid rgba(201,168,76,0.05); margin-top: 1rem; }
 
-.save-btn { background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 1.2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; text-transform: uppercase; border-radius: 3px; letter-spacing: 1px; }
-.save-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+.btn-group { display: flex; gap: 10px; margin-top: 15px; }
+.save-btn { flex: 4; background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 1.2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 3px; }
+.delete-btn { flex: 1; background: var(--blood); color: #fff; border: none; padding: 1.2rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; border-radius: 3px; opacity: 0.7; transition: 0.3s; }
+.delete-btn:hover { opacity: 1; background: #a12a2a; }
 
 #sync-dot { position:fixed; top:1rem; right:1rem; width:10px; height:10px; border-radius:50%; background:#7a1f1f; z-index: 10000; }
 #sync-dot.ok { background:#50c878; box-shadow: 0 0 10px #50c878; }
@@ -71,22 +63,15 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
 
 <div class="site-wrapper">
   <header><div class="school-name">École des Arts Arcanes</div></header>
-
   <div class="rubrique-bar">
     <div class="rubrique-tab active-matieres" id="tab-matieres" onclick="switchRubrique('matieres')">📚 Matières</div>
     <div class="rubrique-tab" id="tab-ferrox" onclick="switchRubrique('ferrox')">🩸 Ferrox</div>
     <div class="rubrique-tab" id="tab-academie" onclick="switchRubrique('academie')">🏛️ Académie</div>
   </div>
-
   <div class="main-layout">
-    <nav id="side-nav">
-      <div id="nav-items-container"></div>
-    </nav>
-
+    <nav id="side-nav"><div id="nav-items-container"></div></nav>
     <div class="content-area" id="main-content">
-        <div style="text-align: center; margin-top: 5rem; opacity: 0.3;">
-            <p>✦ Consultez le menu de gauche pour ouvrir un chapitre ✦</p>
-        </div>
+        <div style="text-align: center; margin-top: 5rem; opacity: 0.3;"><p>✦ Sélectionnez un chapitre ✦</p></div>
     </div>
   </div>
 </div>
@@ -96,30 +81,15 @@ const SB_URL = "https://eoglrxmqyrfxilnxbewx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2xyeG1xeXJmeGlsbnhiZXd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MjQxMDgsImV4cCI6MjA5MzAwMDEwOH0.PLxoyreQnp2_phV_y9lCx4RE_Tc4X0CrLyudR-VFXJI";
 
 const DATA = {
-    matieres: [
-        {id:'sort',label:'⚡ Sortilèges'}, {id:'pot',label:'⚗️ Potions'}, {id:'bot',label:'🌿 Botanique'}, 
-        {id:'disc',label:'📜 Discipline'}, {id:'culi',label:'🍵 Survie'}, {id:'dcfo',label:'🛡️ DCFO'}, 
-        {id:'hist',label:'📖 Histoire'}, {id:'vol',label:'🧹 Vol'}, {id:'crea',label:'🐉 Créatures'}, {id:'divi',label:'🔮 Divination'}
-    ],
-    ferrox: [
-        {id:'f_h',label:'📜 Histoire Ferrox'}, {id:'f_r',label:'🩸 Rituels & Sang'}, {id:'f_a',label:'⚔️ Armes & Combat'}, 
-        {id:'f_al',label:'🔥 Alchimie Sombre'}, {id:'f_c',label:'🦅 Codes & Lois'}, {id:'f_m',label:'🩻 Hiérarchie'}, 
-        {id:'f_ca',label:'🗺️ Cartographie'}, {id:'f_d',label:'📁 Divers'}
-    ],
-    academie: [
-        {id:'a_r',label:'📋 Règles & Statuts'}, {id:'a_c',label:'🎓 Programmes'}, {id:'a_e',label:'✏️ Examens'}, 
-        {id:'a_p',label:'👤 Professeurs'}, {id:'a_ev',label:'🌟 Événements'}, {id:'a_ca',label:'🗺️ Cartographie'}, 
-        {id:'a_ar',label:'🗄️ Archives'}, {id:'a_d',label:'📁 Divers'}
-    ]
+    matieres: [{id:'sort',label:'⚡ Sortilèges'}, {id:'pot',label:'⚗️ Potions'}, {id:'bot',label:'🌿 Botanique'}, {id:'disc',label:'📜 Discipline'}, {id:'culi',label:'🍵 Survie'}, {id:'dcfo',label:'🛡️ DCFO'}, {id:'hist',label:'📖 Histoire'}, {id:'vol',label:'🧹 Vol'}, {id:'crea',label:'🐉 Créatures'}, {id:'divi',label:'🔮 Divination'}],
+    ferrox: [{id:'f_h',label:'📜 Histoire Ferrox'}, {id:'f_r',label:'🩸 Rituels & Sang'}, {id:'f_a',label:'⚔️ Armes & Combat'}, {id:'f_al',label:'🔥 Alchimie Sombre'}, {id:'f_c',label:'🦅 Codes & Lois'}, {id:'f_m',label:'🩻 Hiérarchie'}, {id:'f_ca',label:'🗺️ Cartographie'}, {id:'f_d',label:'📁 Divers'}],
+    academie: [{id:'a_r',label:'📋 Règles & Statuts'}, {id:'a_c',label:'🎓 Programmes'}, {id:'a_e',label:'✏️ Examens'}, {id:'a_p',label:'👤 Professeurs'}, {id:'a_ev',label:'🌟 Événements'}, {id:'a_ca',label:'🗺️ Cartographie'}, {id:'a_ar',label:'🗄️ Archives'}, {id:'a_d',label:'📁 Divers'}]
 };
 
 let sb = supabase.createClient(SB_URL, SB_KEY);
 let allCourseData = {}; 
-let currentCourseId = null;
-let currentPageId = null;
-let currentRubrique = 'matieres';
+let currentCourseId = null, currentPageId = null, currentRubrique = 'matieres';
 
-// --- INITIALISATION ---
 async function loadAll() {
   const { data } = await sb.from('notes').select('*');
   data?.forEach(n => {
@@ -131,31 +101,23 @@ async function loadAll() {
   document.getElementById('sync-dot').classList.add('ok');
 }
 
-// --- NAVIGATION ---
 function switchRubrique(rub) {
     currentRubrique = rub;
     document.querySelectorAll('.rubrique-tab').forEach(t => t.classList.remove('active-matieres', 'active-ferrox', 'active-academie'));
     document.getElementById('tab-' + rub).classList.add('active-' + rub);
-    
     const container = document.getElementById('nav-items-container');
-    container.innerHTML = DATA[rub].map(c => `
-        <div class="nav-item" id="nav-${c.id}" onclick="selectCourse('${c.id}', '${c.label}')">
-            ${c.label}
-        </div>
-    `).join('');
+    container.innerHTML = DATA[rub].map(c => `<div class="nav-item" id="nav-${c.id}" onclick="selectCourse('${c.id}', '${c.label}')">${c.label}</div>`).join('');
 }
 
 function selectCourse(id, label) {
     currentCourseId = id;
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('nav-' + id).classList.add('active');
-
     if(!allCourseData[id]) allCourseData[id] = [{id: id + '_p1', content: ''}];
     currentPageId = allCourseData[id][0].id;
     renderEditor(label);
 }
 
-// --- LOGIQUE ÉDITEUR ---
 function renderEditor(label) {
     const main = document.getElementById('main-content');
     const pages = allCourseData[currentCourseId];
@@ -167,86 +129,70 @@ function renderEditor(label) {
             ${pages.map((p, i) => `<div class="page-tab ${currentPageId === p.id ? 'active' : ''}" onclick="switchPage('${p.id}')">Page ${i + 1}</div>`).join('')}
             <button class="page-tab" style="border:1px dashed var(--gold)" onclick="addPage()">+ Nouvelle Page</button>
         </div>
-        
-        <div class="course-editor" id="editor" contenteditable="true" placeholder="Rédigez, collez ou glissez vos images ici...">${activePage.content}</div>
-        
-        <button class="save-btn" onclick="save()">✦ Enregistrer dans le Grimoire</button>
-        
+        <div class="course-editor" id="editor" contenteditable="true">${activePage.content}</div>
+        <div class="btn-group">
+            <button class="save-btn" onclick="save()">✦ Enregistrer</button>
+            <button class="delete-btn" onclick="deleteCurrentPage()">Supprimer Page</button>
+        </div>
         <div class="preview-title">📜 VERSION SAUVEGARDÉE</div>
         <div class="course-preview" id="preview">${activePage.content}</div>
     `;
-
     const ed = document.getElementById('editor');
-    // Gestion du Coller
     ed.addEventListener('paste', handlePaste);
-    // Gestion du Drag & Drop
-    ed.addEventListener('dragover', (e) => { e.preventDefault(); ed.classList.add('dragover'); });
-    ed.addEventListener('dragleave', () => { ed.classList.remove('dragover'); });
+    ed.addEventListener('dragover', (e) => e.preventDefault());
     ed.addEventListener('drop', handleDrop);
 }
 
-// --- HANDLERS IMAGES ---
 function handlePaste(e) {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let item of items) {
-        if (item.type.indexOf("image") !== -1) {
-            e.preventDefault();
-            const blob = item.getAsFile();
-            insertImage(blob);
-        }
-    }
+    for (let item of items) { if (item.type.indexOf("image") !== -1) { e.preventDefault(); insertImage(item.getAsFile()); } }
 }
 
 function handleDrop(e) {
     e.preventDefault();
-    const ed = document.getElementById('editor');
-    ed.classList.remove('dragover');
-    const files = e.dataTransfer.files;
-    for (let file of files) {
-        if (file.type.startsWith('image/')) insertImage(file);
-    }
+    for (let file of e.dataTransfer.files) { if (file.type.startsWith('image/')) insertImage(file); }
 }
 
 function insertImage(file) {
     const reader = new FileReader();
-    reader.onload = (event) => {
-        const img = document.createElement("img");
-        img.src = event.target.result;
-        // On insère l'image à la fin ou à la position du curseur
-        document.getElementById('editor').appendChild(img);
-    };
+    reader.onload = (e) => { const img = document.createElement("img"); img.src = e.target.result; document.getElementById('editor').appendChild(img); };
     reader.readAsDataURL(file);
 }
 
-// --- ACTIONS ---
-function switchPage(pid) {
-    currentPageId = pid;
-    const label = DATA[currentRubrique].find(c => c.id === currentCourseId).label;
-    renderEditor(label);
-}
+function switchPage(pid) { currentPageId = pid; renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label); }
 
 function addPage() {
     const newId = currentCourseId + '_p' + Date.now();
     allCourseData[currentCourseId].push({id: newId, content: ''});
     currentPageId = newId;
-    const label = DATA[currentRubrique].find(c => c.id === currentCourseId).label;
-    renderEditor(label);
+    renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label);
+}
+
+async function deleteCurrentPage() {
+    if (!confirm("Voulez-vous vraiment déchirer cette page du grimoire ? Cette action est irréversible.")) return;
+    
+    // Supprimer de Supabase
+    await sb.from('notes').delete().eq('id', currentPageId);
+    
+    // Supprimer localement
+    allCourseData[currentCourseId] = allCourseData[currentCourseId].filter(p => p.id !== currentPageId);
+    
+    // S'il ne reste plus de pages, on en crée une vide par défaut
+    if (allCourseData[currentCourseId].length === 0) {
+        allCourseData[currentCourseId] = [{id: currentCourseId + '_p1', content: ''}];
+    }
+    
+    currentPageId = allCourseData[currentCourseId][0].id;
+    renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label);
 }
 
 async function save() {
     const content = document.getElementById('editor').innerHTML;
-    const prev = document.getElementById('preview');
-    
     const { error } = await sb.from('notes').upsert({id: currentPageId, content: content});
-    
     if(!error) {
-        const p = allCourseData[currentCourseId].find(p => p.id === currentPageId);
-        if(p) p.content = content;
-        prev.innerHTML = content;
-        prev.classList.add('save-flash');
-        setTimeout(() => prev.classList.remove('save-flash'), 600);
-    } else {
-        alert("Erreur de sauvegarde : " + error.message);
+        allCourseData[currentCourseId].find(p => p.id === currentPageId).content = content;
+        document.getElementById('preview').innerHTML = content;
+        alert("Page sauvegardée !");
     }
 }
 
