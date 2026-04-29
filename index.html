@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+/* --- STYLE GLOBAL --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
   --gold: #c9a84c; --gold-light: #e8c97a; --gold-dark: #8a6a1f;
@@ -38,14 +39,23 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
 .delete-page-icon { color: var(--blood); cursor: pointer; font-family: 'Cinzel Decorative'; font-size: 0.7rem; letter-spacing: 1px; border: 1px solid var(--blood); padding: 5px 10px; border-radius: 3px; transition: 0.3s; }
 .delete-page-icon:hover { background: var(--blood); color: white; }
 
-/* ÉDITEUR */
+/* ÉDITEUR MAGIQUE */
 .course-editor { 
   width:100%; min-height:350px; background:rgba(10,8,4,0.6); 
   border:1px solid rgba(201,168,76,0.3); padding:1.5rem; 
   color:var(--parchment); font-family:inherit; font-size:1.1rem; 
   outline:none; line-height: 1.6; border-radius: 4px;
 }
-.course-editor img { max-width: 80%; height: auto; display: block; margin: 1.5rem auto; border: 1px solid var(--gold-dark); border-radius: 3px; }
+/* Style des images pour qu'elles restent à leur place */
+.course-editor img, .course-preview img { 
+  max-width: 90%; 
+  height: auto; 
+  display: block; 
+  margin: 1rem auto; 
+  border: 1px solid var(--gold-dark); 
+  border-radius: 3px;
+  pointer-events: auto;
+}
 
 .page-manager { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
 .page-tab { padding: 6px 14px; background: rgba(201, 168, 76, 0.05); border: 1px solid rgba(201, 168, 76, 0.2); color: var(--muted); cursor: pointer; font-size: 0.8rem; border-radius: 3px; }
@@ -74,7 +84,7 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
   <div class="main-layout">
     <nav id="side-nav"><div id="nav-items-container"></div></nav>
     <div class="content-area" id="main-content">
-        <div style="text-align: center; margin-top: 5rem; opacity: 0.3;"><p>✦ Sélectionnez un chapitre ✦</p></div>
+        <div style="text-align: center; margin-top: 5rem; opacity: 0.3;"><p>✦ Sélectionnez un enseignement ✦</p></div>
     </div>
   </div>
 </div>
@@ -131,16 +141,12 @@ function renderEditor(label) {
             <h2 style="font-family:Cinzel Decorative; color:var(--gold-light);">${label}</h2>
             <div class="delete-page-icon" onclick="deleteCurrentPage()">Déchirer la page</div>
         </div>
-        
         <div class="page-manager">
             ${pages.map((p, i) => `<div class="page-tab ${currentPageId === p.id ? 'active' : ''}" onclick="switchPage('${p.id}')">Page ${i + 1}</div>`).join('')}
             <button class="page-tab" style="border:1px dashed var(--gold)" onclick="addPage()">+ Nouvelle Page</button>
         </div>
-        
         <div class="course-editor" id="editor" contenteditable="true">${activePage.content}</div>
-        
         <button class="save-btn" onclick="save()">✦ Enregistrer dans le Grimoire</button>
-        
         <div class="preview-title">📜 VERSION SAUVEGARDÉE</div>
         <div class="course-preview" id="preview">${activePage.content}</div>
     `;
@@ -150,19 +156,52 @@ function renderEditor(label) {
     ed.addEventListener('drop', handleDrop);
 }
 
+// --- LOGIQUE D'INSERTION PRÉCISE ---
 function handlePaste(e) {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let item of items) { if (item.type.indexOf("image") !== -1) { e.preventDefault(); insertImage(item.getAsFile()); } }
+    for (let item of items) { 
+        if (item.type.indexOf("image") !== -1) { 
+            e.preventDefault(); 
+            insertImageAtCursor(item.getAsFile()); 
+        } 
+    }
 }
 
 function handleDrop(e) {
     e.preventDefault();
-    for (let file of e.dataTransfer.files) { if (file.type.startsWith('image/')) insertImage(file); }
+    // On essaie de placer le curseur là où on a lâché l'image
+    if (document.caretRangeFromPoint) {
+        let range = document.caretRangeFromPoint(e.clientX, e.clientY);
+        let sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+    for (let file of e.dataTransfer.files) { 
+        if (file.type.startsWith('image/')) insertImageAtCursor(file); 
+    }
 }
 
-function insertImage(file) {
+function insertImageAtCursor(file) {
     const reader = new FileReader();
-    reader.onload = (e) => { const img = document.createElement("img"); img.src = e.target.result; document.getElementById('editor').appendChild(img); };
+    reader.onload = (e) => { 
+        const img = document.createElement("img"); 
+        img.src = e.target.result;
+        
+        // Insertion à l'endroit exact du curseur
+        const sel = window.getSelection();
+        if (sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(img);
+            // On déplace le curseur après l'image
+            range.setStartAfter(img);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else {
+            document.getElementById('editor').appendChild(img);
+        }
+    };
     reader.readAsDataURL(file);
 }
 
@@ -180,14 +219,11 @@ function addPage() {
 
 async function deleteCurrentPage() {
     if (!confirm("Voulez-vous vraiment déchirer cette page du grimoire ?")) return;
-    
     await sb.from('notes').delete().eq('id', currentPageId);
     allCourseData[currentCourseId] = allCourseData[currentCourseId].filter(p => p.id !== currentPageId);
-    
     if (allCourseData[currentCourseId].length === 0) {
         allCourseData[currentCourseId] = [{id: currentCourseId + '_p1', content: ''}];
     }
-    
     currentPageId = allCourseData[currentCourseId][0].id;
     renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label);
 }
@@ -199,7 +235,7 @@ async function save() {
         const p = allCourseData[currentCourseId].find(p => p.id === currentPageId);
         if(p) p.content = content;
         document.getElementById('preview').innerHTML = content;
-        alert("Page sauvegardée !");
+        alert("Savoir consigné ✓");
     }
 }
 
