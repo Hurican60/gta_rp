@@ -33,6 +33,12 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
 
 .content-area { flex:1; padding:2rem; overflow-y: auto; }
 
+/* TITRE ET SUPPRESSION */
+.course-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.delete-page-icon { color: var(--blood); cursor: pointer; font-family: 'Cinzel Decorative'; font-size: 0.7rem; letter-spacing: 1px; border: 1px solid var(--blood); padding: 5px 10px; border-radius: 3px; transition: 0.3s; }
+.delete-page-icon:hover { background: var(--blood); color: white; }
+
+/* ÉDITEUR */
 .course-editor { 
   width:100%; min-height:350px; background:rgba(10,8,4,0.6); 
   border:1px solid rgba(201,168,76,0.3); padding:1.5rem; 
@@ -46,12 +52,9 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
 .page-tab.active { background: rgba(201, 168, 76, 0.2); color: var(--gold-light); border-color: var(--gold); }
 
 .preview-title { margin-top: 3rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; letter-spacing: 2px; }
-.course-preview { background: rgba(255,255,255,0.01); padding: 2rem; border-radius: 4px; min-height: 100px; color:#e0d5ba; border: 1px solid rgba(201,168,76,0.05); margin-top: 1rem; }
+.course-preview { background: rgba(255,255,255,0.01); padding: 2rem; border-radius: 4px; min-height: 100px; color:#e0d5ba; border: 1px solid rgba(201, 168, 76, 0.05); margin-top: 1rem; }
 
-.btn-group { display: flex; gap: 10px; margin-top: 15px; }
-.save-btn { flex: 4; background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 1.2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 3px; }
-.delete-btn { flex: 1; background: var(--blood); color: #fff; border: none; padding: 1.2rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; border-radius: 3px; opacity: 0.7; transition: 0.3s; }
-.delete-btn:hover { opacity: 1; background: #a12a2a; }
+.save-btn { width: 100%; background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 1.2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; border-radius: 3px; letter-spacing: 1px; }
 
 #sync-dot { position:fixed; top:1rem; right:1rem; width:10px; height:10px; border-radius:50%; background:#7a1f1f; z-index: 10000; }
 #sync-dot.ok { background:#50c878; box-shadow: 0 0 10px #50c878; }
@@ -112,7 +115,7 @@ function switchRubrique(rub) {
 function selectCourse(id, label) {
     currentCourseId = id;
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('nav-' + id).classList.add('active');
+    if(document.getElementById('nav-' + id)) document.getElementById('nav-' + id).classList.add('active');
     if(!allCourseData[id]) allCourseData[id] = [{id: id + '_p1', content: ''}];
     currentPageId = allCourseData[id][0].id;
     renderEditor(label);
@@ -121,19 +124,23 @@ function selectCourse(id, label) {
 function renderEditor(label) {
     const main = document.getElementById('main-content');
     const pages = allCourseData[currentCourseId];
-    const activePage = pages.find(p => p.id === currentPageId);
+    const activePage = pages.find(p => p.id === currentPageId) || pages[0];
 
     main.innerHTML = `
-        <h2 style="font-family:Cinzel Decorative; color:var(--gold-light); margin-bottom:1.5rem;">${label}</h2>
+        <div class="course-header-flex">
+            <h2 style="font-family:Cinzel Decorative; color:var(--gold-light);">${label}</h2>
+            <div class="delete-page-icon" onclick="deleteCurrentPage()">Déchirer la page</div>
+        </div>
+        
         <div class="page-manager">
             ${pages.map((p, i) => `<div class="page-tab ${currentPageId === p.id ? 'active' : ''}" onclick="switchPage('${p.id}')">Page ${i + 1}</div>`).join('')}
             <button class="page-tab" style="border:1px dashed var(--gold)" onclick="addPage()">+ Nouvelle Page</button>
         </div>
+        
         <div class="course-editor" id="editor" contenteditable="true">${activePage.content}</div>
-        <div class="btn-group">
-            <button class="save-btn" onclick="save()">✦ Enregistrer</button>
-            <button class="delete-btn" onclick="deleteCurrentPage()">Supprimer Page</button>
-        </div>
+        
+        <button class="save-btn" onclick="save()">✦ Enregistrer dans le Grimoire</button>
+        
         <div class="preview-title">📜 VERSION SAUVEGARDÉE</div>
         <div class="course-preview" id="preview">${activePage.content}</div>
     `;
@@ -159,7 +166,10 @@ function insertImage(file) {
     reader.readAsDataURL(file);
 }
 
-function switchPage(pid) { currentPageId = pid; renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label); }
+function switchPage(pid) { 
+    currentPageId = pid; 
+    renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label); 
+}
 
 function addPage() {
     const newId = currentCourseId + '_p' + Date.now();
@@ -169,15 +179,11 @@ function addPage() {
 }
 
 async function deleteCurrentPage() {
-    if (!confirm("Voulez-vous vraiment déchirer cette page du grimoire ? Cette action est irréversible.")) return;
+    if (!confirm("Voulez-vous vraiment déchirer cette page du grimoire ?")) return;
     
-    // Supprimer de Supabase
     await sb.from('notes').delete().eq('id', currentPageId);
-    
-    // Supprimer localement
     allCourseData[currentCourseId] = allCourseData[currentCourseId].filter(p => p.id !== currentPageId);
     
-    // S'il ne reste plus de pages, on en crée une vide par défaut
     if (allCourseData[currentCourseId].length === 0) {
         allCourseData[currentCourseId] = [{id: currentCourseId + '_p1', content: ''}];
     }
@@ -190,7 +196,8 @@ async function save() {
     const content = document.getElementById('editor').innerHTML;
     const { error } = await sb.from('notes').upsert({id: currentPageId, content: content});
     if(!error) {
-        allCourseData[currentCourseId].find(p => p.id === currentPageId).content = content;
+        const p = allCourseData[currentCourseId].find(p => p.id === currentPageId);
+        if(p) p.content = content;
         document.getElementById('preview').innerHTML = content;
         alert("Page sauvegardée !");
     }
