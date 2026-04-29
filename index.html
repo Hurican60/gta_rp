@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+/* --- STYLES RESTAURÉS ET FIXÉS --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
   --gold: #c9a84c; --gold-light: #e8c97a; --gold-dark: #8a6a1f;
@@ -28,66 +29,52 @@ body { background:#0a0804; font-family:'IM Fell English',serif; color:var(--parc
 .setup-input { width:100%; background:rgba(8,6,2,.8); border:1px solid rgba(201,168,76,.2); border-radius:3px; color:var(--parchment); padding:.6rem .9rem; margin-bottom:1rem; outline:none; }
 .setup-btn { width:100%; background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05)); border:1px solid rgba(201,168,76,.4); color:var(--gold-light); font-family:'Cinzel Decorative'; padding:.75rem; cursor:pointer; text-transform:uppercase; border-radius:3px; }
 
-/* HEADER */
+/* HEADER & TABS */
 header { text-align:center; padding:2.2rem 2rem 1.5rem; border-bottom:1px solid rgba(201,168,76,.2); }
-.header-ornament { font-size:22px; color:var(--gold); letter-spacing:18px; margin-bottom:.4rem; display:block; opacity:.6; }
-.school-name { font-family:'Cinzel Decorative',cursive; font-size:clamp(1.3rem,3.5vw,2.5rem); color:var(--gold-light); text-shadow:0 0 40px rgba(201,168,76,.35); }
-
-/* RUBRIQUE BAR */
+.school-name { font-family:'Cinzel Decorative',cursive; font-size:clamp(1.3rem,3.5vw,2.5rem); color:var(--gold-light); }
 .rubrique-bar { display:flex; align-items:center; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); padding:0 2rem; overflow-x:auto; }
-.rubrique-tab { padding:.9rem 1.8rem; font-family:'Cinzel Decorative'; font-size:.62rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; text-transform:uppercase; }
+.rubrique-tab { padding:.9rem 1.8rem; font-family:'Cinzel Decorative'; font-size:.62rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; text-transform:uppercase; white-space:nowrap; }
 .rubrique-tab.active-matieres { color:var(--gold-light); border-bottom-color:var(--gold); }
 .rubrique-tab.active-ferrox { color:#e87070; border-bottom-color:var(--accent-ferrox-light); }
 .rubrique-tab.active-academie { color:#70a0e8; border-bottom-color:var(--accent-acad-light); }
-.rubrique-sep { width:1px; height:20px; background:rgba(201,168,76,.15); margin:0 .5rem; }
 
-/* LAYOUT & NAV */
+/* LAYOUT */
 .rubrique-panel { display:none; flex:1; }
 .rubrique-panel.active { display:flex; }
 .main-layout { display:flex; flex:1; max-width:1300px; margin:0 auto; width:100%; }
 nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgba(201,168,76,.12); position:sticky; top:0; height:calc(100vh - 158px); overflow-y:auto; }
-.nav-title { font-family:'Cinzel Decorative'; font-size:.55rem; color:var(--muted); letter-spacing:.22em; padding:0 1.2rem .8rem; border-bottom:1px solid rgba(201,168,76,0.1); margin-bottom:.4rem; }
-.nav-item { display:flex; align-items:center; gap:.7rem; padding:.65rem 1.2rem; cursor:pointer; font-size:.88rem; color:var(--muted); border-left:3px solid transparent; transition:0.2s; }
+.nav-item { display:flex; align-items:center; gap:.7rem; padding:.65rem 1.2rem; cursor:pointer; font-size:.88rem; color:var(--muted); border-left:3px solid transparent; }
 .nav-item.active { color:var(--gold-light); background:rgba(201,168,76,.08); border-left-color:var(--gold); }
 .nav-item.active-ferrox-item { color:#e87070 !important; background:rgba(122,31,31,.1); border-left-color:var(--accent-ferrox-light); }
 .nav-item.active-acad-item { color:#70a0e8 !important; background:rgba(31,61,122,.1); border-left-color:var(--accent-acad-light); }
 
-/* CONTENT & EDITOR */
+/* EDITOR & PREVIEW */
 .content-area { flex:1; padding:2rem 2.5rem; }
 .course-panel { display:none; }
 .course-panel.active { display:block; }
-.section-tabs { display:flex; margin-bottom:1.2rem; border-bottom:1px solid rgba(201,168,76,.15); }
-.section-tab { padding:.55rem 1.2rem; font-family:'Cinzel Decorative'; font-size:.55rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; }
-.section-tab.active { color:var(--gold-light); border-bottom-color:var(--gold); }
+.editor-toolbar { display:flex; gap:3px; background:rgba(201,168,76,0.05); border:1px solid rgba(201,168,76,0.2); padding:5px; border-radius:4px 4px 0 0; }
+.course-editor { width:100%; min-height:250px; background:rgba(10,8,4,0.8); border:1px solid rgba(201,168,76,0.2); border-top:none; padding:1rem; color:var(--parchment); font-family:inherit; font-size:1rem; outline:none; resize:vertical; }
 
-.editor-toolbar { display:flex; gap:3px; background:rgba(201,168,76,.04); border:1px solid rgba(201,168,76,.13); padding:5px; border-radius:3px 3px 0 0; }
-.course-editor { width:100%; min-height:300px; background:rgba(8,6,2,.7); border:1px solid rgba(201,168,76,.18); padding:1.1rem; color:var(--parchment); font-family:inherit; font-size:.97rem; line-height:1.85; outline:none; resize:vertical; }
-.toolbar-btn { background:none; border:none; color:var(--muted); cursor:pointer; padding:3px 7px; font-size:11px; }
+.preview-title { margin-top: 3rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); letter-spacing: 0.1em; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+.course-preview { background: rgba(240, 230, 204, 0.03); border: 1px solid rgba(201, 168, 76, 0.1); padding: 2rem; border-radius: 4px; line-height: 1.8; color: #e0d5ba; min-height: 100px; white-space: pre-wrap; margin-bottom: 3rem; transition: background 0.3s; }
+.preview-h1 { color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.5rem; display: block; margin-top: 1rem; border-bottom: 1px solid rgba(201,168,76,0.2); }
 
-/* PREVIEW SYSTEM */
-.preview-title { margin-top: 3rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); letter-spacing: 0.2em; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-.course-preview { background: rgba(240, 230, 204, 0.02); border: 1px solid rgba(201, 168, 76, 0.12); padding: 2.5rem; border-radius: 4px; line-height: 1.9; color: #e0d5ba; white-space: pre-wrap; font-size: 1.05rem; margin-bottom: 4rem; transition: all 0.4s; }
-.preview-h1 { color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.6rem; margin: 1rem 0; display: block; border-bottom: 1px solid rgba(201,168,76,0.15); }
-.preview-h2 { color: var(--gold); font-family: 'Cinzel Decorative'; font-size: 1.2rem; margin: 1rem 0; display: block; }
-.preview-bullet { color: var(--gold); margin-right: 10px; font-weight: bold; }
+/* IMAGES GRID */
+.image-upload-zone { border:1.5px dashed rgba(201,168,76,.25); padding:1.5rem; text-align:center; cursor:pointer; margin-bottom:1rem; color:var(--muted); }
+.image-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:1rem; }
+.image-card { position:relative; border:1px solid rgba(201,168,76,0.2); aspect-ratio:1/1; overflow:hidden; }
+.image-card img { width:100%; height:100%; object-fit:cover; }
+.del-btn { position:absolute; top:5px; right:5px; background:red; color:white; border:none; padding:2px 6px; cursor:pointer; font-size:10px; }
 
-/* FEEDBACK SAUVEGARDE */
-.save-flash { background: rgba(201, 168, 76, 0.1) !important; border-color: var(--gold) !important; box-shadow: 0 0 15px rgba(201, 168, 76, 0.1); }
+/* BOUTON SAUVEGARDE */
+.save-row { margin-top:1rem; display:flex; justify-content: flex-end; }
+.save-btn { background: linear-gradient(to bottom, #c9a84c, #8a6a1f); color: #0a0804; border: none; padding: 0.8rem 2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.save-btn:active { transform: translateY(2px); }
 
-/* SAVE ROW */
-.save-row { display:flex; align-items:center; justify-content:space-between; margin-top:1rem; }
-.save-btn { background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.05)); border:1px solid var(--gold-dark); color:var(--gold-light); font-family:'Cinzel Decorative'; font-size:.65rem; padding:.7rem 2rem; cursor:pointer; text-transform:uppercase; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-.save-btn:hover { background:rgba(201, 168, 76, 0.25); border-color:var(--gold-light); transform: translateY(-1px); }
-.save-btn.ferrox-save { border-color:var(--accent-ferrox); color:#e87070; }
-.save-btn.acad-save { border-color:var(--accent-acad); color:#70a0e8; }
-
-#sync-dot { position:fixed; top:1rem; right:1rem; z-index:500; width:8px; height:8px; border-radius:50%; background:var(--gold-dark); transition: 0.3s; }
-#sync-dot.ok { background:#50c878; }
-#sync-dot.syncing { background:#e8c97a; animation: pulse 0.8s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-#status-bar { position:fixed; bottom:1rem; right:1rem; z-index:500; display:flex; flex-direction:column; gap:.4rem; pointer-events:none; }
-.status-toast { background:rgba(10,8,3,.95); border:1px solid var(--gold); padding:.5rem 1rem; color:var(--parchment); font-size:.8rem; border-radius:4px; opacity:0; transform:translateY(10px); transition:0.3s; }
-.status-toast.show { opacity:1; transform:translateY(0); }
+#sync-dot { position:fixed; top:1rem; right:1rem; z-index:500; width:10px; height:10px; border-radius:50%; background:var(--gold-dark); }
+#sync-dot.ok { background:#50c878; box-shadow: 0 0 10px #50c878; }
+#status-bar { position:fixed; bottom:1rem; right:1rem; z-index:500; }
+.toast { background:rgba(10,8,4,0.95); border:1px solid var(--gold); padding:0.6rem 1.2rem; color:var(--gold-light); border-radius:4px; font-size:0.9rem; margin-top:0.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 </style>
 </head>
 <body>
@@ -97,7 +84,7 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 <div id="setup-overlay">
   <div class="setup-box">
     <div class="setup-title">⚙ Configuration Supabase</div>
-    <input class="setup-input" id="input-url" placeholder="URL du projet Supabase">
+    <input class="setup-input" id="input-url" placeholder="URL du projet">
     <input class="setup-input" id="input-key" placeholder="Clé Anon Public">
     <button class="setup-btn" onclick="connectSupabase()">✦ Ouvrir le Grimoire</button>
   </div>
@@ -105,69 +92,53 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 
 <div class="site-wrapper">
   <header>
-    <span class="header-ornament">✦ ✦ ✦</span>
     <div class="school-name">École des Arts Arcanes</div>
-    <div style="font-style:italic; color:var(--muted); margin-top:5px;">Registre de Pédagogie Arcanique</div>
+    <div style="font-style:italic; color:var(--muted); font-size:0.9rem;">Registre de Pédagogie Arcanique — GTA RP</div>
   </header>
 
   <div class="rubrique-bar">
     <div class="rubrique-tab active-matieres" id="tab-matieres" onclick="switchRubrique('matieres')">📚 Matières</div>
-    <div class="rubrique-sep"></div>
     <div class="rubrique-tab" id="tab-ferrox" onclick="switchRubrique('ferrox')">🩸 Maison Ferrox</div>
-    <div class="rubrique-sep"></div>
     <div class="rubrique-tab" id="tab-academie" onclick="switchRubrique('academie')">🏛️ Académie</div>
   </div>
 
   <div id="rubrique-matieres" class="rubrique-panel active">
-    <div class="main-layout"><nav id="nav-matieres"><div class="nav-title">GRIMOIRE</div></nav><div class="content-area" id="content-matieres"></div></div>
+    <div class="main-layout"><nav id="nav-matieres"></nav><div class="content-area" id="content-matieres"></div></div>
   </div>
   <div id="rubrique-ferrox" class="rubrique-panel">
-    <div class="main-layout"><nav id="nav-ferrox"><div class="nav-title" style="color:#e87070">FERROX</div></nav><div class="content-area" id="content-ferrox"></div></div>
+    <div class="main-layout"><nav id="nav-ferrox"></nav><div class="content-area" id="content-ferrox"></div></div>
   </div>
   <div id="rubrique-academie" class="rubrique-panel">
-    <div class="main-layout"><nav id="nav-academie"><div class="nav-title" style="color:#70a0e8">ACADÉMIE</div></nav><div class="content-area" id="content-academie"></div></div>
+    <div class="main-layout"><nav id="nav-academie"></nav><div class="content-area" id="content-academie"></div></div>
   </div>
 </div>
 
 <div id="status-bar"></div>
 
 <script>
-// --- DONNÉES ---
+// --- DONNÉES RESTAURÉES ---
 const MATIERES = [
-  {id:'sortileges',icon:'⚡',label:'Sortilèges',meta:"Gestes et paroles"},
-  {id:'potions',icon:'⚗️',label:'Potions',meta:"Alchimie et formules"},
-  {id:'botanique',icon:'🌿',label:'Botanique',meta:"Plantes magiques"},
-  {id:'discipline',icon:'📜',label:'Discipline',meta:"Vie en communauté"},
-  {id:'culinaire',icon:'🍵',label:'Survie Culinaire',meta:"Art de se nourrir"},
-  {id:'dcfo',icon:'🛡️',label:'DCFO',meta:"Défense obscure"},
-  {id:'histoire',icon:'📖',label:'Histoire',meta:"Chroniques magiques"},
-  {id:'vol',icon:'🧹',label:'Vol',meta:"Maîtrise des balais"},
-  {id:'creatures',icon:'🐉',label:'Créatures',meta:"Soins et classes"},
-  {id:'divination',icon:'🔮',label:'Divination',meta:"Lire l'avenir"}
+  {id:'sortileges',icon:'⚡',label:'Sortilèges'}, {id:'potions',icon:'⚗️',label:'Potions'},
+  {id:'botanique',icon:'🌿',label:'Botanique'}, {id:'discipline',icon:'📜',label:'Discipline'},
+  {id:'culinaire',icon:'🍵',label:'Survie Culinaire'}, {id:'dcfo',icon:'🛡️',label:'DCFO'},
+  {id:'histoire',icon:'📖',label:'Histoire'}, {id:'vol',icon:'🧹',label:'Vol'},
+  {id:'creatures',icon:'🐉',label:'Créatures'}, {id:'divination',icon:'🔮',label:'Divination'}
 ];
 const FERROX_COURSES = [
-  {id:'ferrox-histoire',icon:'📜',label:'Histoire Ferrox',meta:"Origines"},
-  {id:'ferrox-rituels',icon:'🩸',label:'Rituels & Sang',meta:"Cérémonies"},
-  {id:'ferrox-armes',icon:'⚔️',label:'Armes & Combat',meta:"Techniques"},
-  {id:'ferrox-alchimie',icon:'🔥',label:'Alchimie Sombre',meta:"Transmutations"},
-  {id:'ferrox-codes',icon:'🦅',label:'Codes & Lois',meta:"Loi interne"},
-  {id:'ferrox-membres',icon:'🩻',label:'Hiérarchie',meta:"Grades"},
-  {id:'ferrox-carto',icon:'🗺️',label:'Cartographie',meta:"Territoires"},
-  {id:'ferrox-divers',icon:'📁',label:'Divers',meta:"Notes variées"}
+  {id:'ferrox-h',icon:'📜',label:'Histoire Ferrox'}, {id:'ferrox-r',icon:'🩸',label:'Rituels & Sang'},
+  {id:'ferrox-a',icon:'⚔️',label:'Armes & Combat'}, {id:'ferrox-al',icon:'🔥',label:'Alchimie Sombre'},
+  {id:'ferrox-c',icon:'🦅',label:'Codes & Lois'}, {id:'ferrox-m',icon:'🩻',label:'Hiérarchie'},
+  {id:'ferrox-ca',icon:'🗺️',label:'Cartographie'}, {id:'ferrox-d',icon:'📁',label:'Divers'}
 ];
 const ACADEMIE_COURSES = [
-  {id:'acad-regles',icon:'📋',label:'Règles & Statuts',meta:"Règlement"},
-  {id:'acad-cours',icon:'🎓',label:'Programmes',meta:"Cursus"},
-  {id:'acad-examens',icon:'✏️',label:'Examens',meta:"Épreuves"},
-  {id:'acad-profs',icon:'👤',label:'Professeurs',meta:"Fiches"},
-  {id:'acad-events',icon:'🌟',label:'Événements',meta:"Calendrier"},
-  {id:'acad-carto',icon:'🗺️',label:'Cartographie',meta:"Plans"},
-  {id:'acad-archives',icon:'🗄️',label:'Archives',meta:"Documents"},
-  {id:'acad-divers',icon:'📁',label:'Divers',meta:"Notes"}
+  {id:'acad-r',icon:'📋',label:'Règles & Statuts'}, {id:'acad-c',icon:'🎓',label:'Programmes'},
+  {id:'acad-e',icon:'✏️',label:'Examens'}, {id:'acad-p',icon:'👤',label:'Professeurs'},
+  {id:'acad-ev',icon:'🌟',label:'Événements'}, {id:'acad-ca',icon:'🗺️',label:'Cartographie'},
+  {id:'acad-ar',icon:'🗄️',label:'Archives'}, {id:'acad-d',icon:'📁',label:'Divers'}
 ];
 
 let sb = null;
-let saveTimers = {};
+const imageStore = {};
 
 // --- SUPABASE ---
 async function connectSupabase() {
@@ -180,7 +151,7 @@ async function connectSupabase() {
     localStorage.setItem('sb_url', url); localStorage.setItem('sb_key', key);
     document.getElementById('setup-overlay').classList.add('hidden');
     setSyncDot('ok'); await loadAllData();
-  } catch(e) { alert("Accès au grimoire refusé. Vérifiez vos clés."); }
+  } catch(e) { alert("Clés invalides."); }
 }
 
 async function initSupabase() {
@@ -194,80 +165,96 @@ async function initSupabase() {
 
 async function loadAllData() {
   if (!sb) return;
-  setSyncDot('syncing');
   const {data:notes} = await sb.from('notes').select('*');
   (notes||[]).forEach(n => {
     const ta = document.getElementById('editor-'+n.id);
     if (ta) { ta.value = n.content || ''; updatePreview(n.id); }
   });
-  setSyncDot('ok');
+  const {data:imgs} = await sb.from('images').select('*');
+  (imgs||[]).forEach(img => {
+    if(!imageStore[img.course_id]) imageStore[img.course_id] = [];
+    imageStore[img.course_id].push({id:img.id, src:img.src});
+  });
+  [...MATIERES, ...FERROX_COURSES, ...ACADEMIE_COURSES].forEach(c => renderGrid(c.id));
 }
 
-// --- LOGIQUE DE SAUVEGARDE FIGÉE ---
+// --- LOGIQUE SAUVEGARDE ET PREVIEW ---
 async function saveCourse(id) {
   const ta = document.getElementById('editor-'+id);
-  const prev = document.getElementById('preview-'+id);
   if (!ta || !sb) return;
   
-  setSyncDot('syncing');
-  const contentToSave = ta.value;
-  
-  const {error} = await sb.from('notes').upsert({id, content: contentToSave, updated_at: new Date().toISOString()});
+  const content = ta.value;
+  const {error} = await sb.from('notes').upsert({id, content, updated_at: new Date().toISOString()});
   
   if (!error) {
-    setSyncDot('ok');
-    // Mise à jour forcée de la zone de lecture avec effet visuel
-    updatePreview(id);
-    if(prev) {
-        prev.classList.add('save-flash');
-        setTimeout(() => prev.classList.remove('save-flash'), 600);
-    }
-    toast('Savoir gravé avec succès ✓');
-  } else {
-    setSyncDot('err');
-    alert("Erreur de sauvegarde : " + error.message);
+    updatePreview(id); // On ne met à jour la preview que ICI
+    toast("Savoir enregistré dans le Grimoire ✓");
   }
 }
 
 function updatePreview(id) {
   const ta = document.getElementById('editor-'+id), prev = document.getElementById('preview-'+id);
   if(!ta || !prev) return;
-  
-  // Conversion simple Markdown-like
-  let text = ta.value;
-  let html = text
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") // Sécurité XSS
+  // On génère le HTML à partir du texte sauvegardé
+  prev.innerHTML = ta.value
     .replace(/^# (.*$)/gim, '<span class="preview-h1">$1</span>')
-    .replace(/^## (.*$)/gim, '<span class="preview-h2">$1</span>')
-    .replace(/^• (.*$)/gim, '<div><span class="preview-bullet">●</span> $1</div>')
-    .replace(/^— (.*$)/gim, '<div><span class="preview-bullet">❧</span> $1</div>');
-    
-  prev.innerHTML = html || '<p style="font-style:italic;opacity:0.3">En attente de rédaction...</p>';
+    .replace(/^• (.*$)/gim, '<div>• $1</div>') || 'Le parchemin est vide.';
 }
 
+// --- IMAGES ---
+async function addImages(id, input) {
+  for (const file of input.files) {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const b64 = e.target.result;
+      const {data, error} = await sb.from('images').insert({course_id:id, src:b64}).select().single();
+      if(!error) {
+        if(!imageStore[id]) imageStore[id] = [];
+        imageStore[id].push({id:data.id, src:b64});
+        renderGrid(id);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function renderGrid(id) {
+  const grid = document.getElementById('grid-'+id);
+  if (!grid) return;
+  grid.innerHTML = (imageStore[id]||[]).map((img, i) => `
+    <div class="image-card">
+      <img src="${img.src}">
+      <button class="del-btn" onclick="deleteImg('${id}', ${i})">X</button>
+    </div>`).join('');
+}
+
+async function deleteImg(courseId, idx) {
+  const img = imageStore[courseId][idx];
+  await sb.from('images').delete().eq('id', img.id);
+  imageStore[courseId].splice(idx,1); renderGrid(courseId);
+}
+
+// --- UI BUILDER ---
 function buildPanel(c, rub) {
-  const savCls = rub==='ferrox'?' ferrox-save':rub==='academie'?' acad-save':'';
   return `
   <div id="panel-${c.id}" class="course-panel">
-    <h2 class="preview-h1" style="border:none; margin-bottom:1.5rem">${c.icon} ${c.label}</h2>
-    <div class="section-tabs">
-      <div class="section-tab active" onclick="switchTab('${c.id}','notes',this)">✒️ Notes</div>
-      <div class="section-tab" onclick="switchTab('${c.id}','images',this)">🖼️ Images</div>
-    </div>
-    <div id="tab-${c.id}-notes" class="tab-content active">
-      <div class="editor-toolbar">
+    <h2 style="font-family:'Cinzel Decorative'; color:var(--gold-light); margin-bottom:1rem;">${c.icon} ${c.label}</h2>
+    <div class="editor-toolbar">
         <button class="toolbar-btn" onclick="ins('${c.id}','# ')">Titre</button>
-        <button class="toolbar-btn" onclick="ins('${c.id}','## ')">Sous-titre</button>
         <button class="toolbar-btn" onclick="ins('${c.id}','• ')">Liste</button>
-      </div>
-      <textarea class="course-editor" id="editor-${c.id}" placeholder="Inscrivez votre savoir ici..." oninput="updatePreview('${c.id}'); clearTimeout(saveTimers['${c.id}']); saveTimers['${c.id}']=setTimeout(()=>saveCourse('${c.id}'),4000)"></textarea>
-      <div class="save-row"><button class="save-btn${savCls}" onclick="saveCourse('${c.id}')">✦ Sauvegarder le texte</button></div>
-      <div class="preview-title">📜 Lecture du Grimoire (Version enregistrée)</div>
-      <div class="course-preview" id="preview-${c.id}"></div>
     </div>
-    <div id="tab-${c.id}-images" class="tab-content">
-      <div class="image-upload-zone">La gestion des images nécessite d'être connecté à Supabase</div>
+    <textarea class="course-editor" id="editor-${c.id}" placeholder="Écrivez votre cours..."></textarea>
+    <div class="save-row">
+        <button class="save-btn" onclick="saveCourse('${c.id}')">✦ Sauvegarder dans le Grimoire</button>
     </div>
+    
+    <div class="preview-title">📜 Version figée du cours</div>
+    <div class="course-preview" id="preview-${c.id}"></div>
+
+    <div class="preview-title">🖼️ Iconographie (Images)</div>
+    <div class="image-upload-zone" onclick="document.getElementById('file-${c.id}').click()">Cliquez pour ajouter des images</div>
+    <input type="file" id="file-${c.id}" hidden multiple onchange="addImages('${c.id}',this)">
+    <div class="image-grid" id="grid-${c.id}"></div>
   </div>`;
 }
 
@@ -284,40 +271,33 @@ function buildAll() {
   });
 }
 
-function switchRubrique(name) {
-  document.querySelectorAll('.rubrique-tab').forEach(t => t.classList.remove('active-matieres', 'active-ferrox', 'active-academie'));
-  document.getElementById('tab-' + name).classList.add('active-' + name);
-  document.querySelectorAll('.rubrique-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('rubrique-' + name).classList.add('active');
+function ins(id, t) {
+  const ta = document.getElementById('editor-'+id);
+  const s = ta.selectionStart;
+  ta.value = ta.value.substring(0,s) + t + ta.value.substring(ta.selectionEnd);
+  ta.focus();
 }
 
 function showCourse(id, el, rub) {
   el.parentElement.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'active-ferrox-item', 'active-acad-item'));
   document.getElementById('rubrique-'+rub).querySelectorAll('.course-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
-  el.classList.add(rub === 'ferrox' ? 'active-ferrox-item' : (rub === 'academie' ? 'active-acad-item' : 'active'));
+  const cls = rub === 'ferrox' ? 'active-ferrox-item' : (rub === 'academie' ? 'active-acad-item' : 'active');
+  el.classList.add(cls);
 }
 
-function switchTab(id, tab, el) {
-  const p = document.getElementById('panel-'+id);
-  p.querySelectorAll('.section-tab').forEach(t=>t.classList.remove('active'));
-  p.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('tab-'+id+'-'+tab).classList.add('active');
-}
-
-function ins(id, t) {
-  const ta = document.getElementById('editor-'+id);
-  const s = ta.selectionStart;
-  ta.value = ta.value.substring(0,s) + t + ta.value.substring(ta.selectionEnd);
-  updatePreview(id); ta.focus();
+function switchRubrique(n) {
+  document.querySelectorAll('.rubrique-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.rubrique-tab').forEach(t => t.classList.remove('active-matieres', 'active-ferrox', 'active-academie'));
+  document.getElementById('rubrique-'+n).classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active-'+n);
 }
 
 function setSyncDot(s) { document.getElementById('sync-dot').className = s; }
 function toast(m) {
-  const b = document.getElementById('status-bar');
-  const e = document.createElement('div'); e.className = 'status-toast show'; e.textContent = m;
-  b.appendChild(e); setTimeout(()=>e.remove(), 2500);
+  const bar = document.getElementById('status-bar');
+  const e = document.createElement('div'); e.className = 'toast'; e.textContent = m;
+  bar.appendChild(e); setTimeout(()=>e.remove(), 3000);
 }
 
 buildAll();
