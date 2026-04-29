@@ -26,11 +26,11 @@ body { background:#0a0804; font-family:'IM Fell English',serif; color:var(--parc
 /* HEADER & TABS */
 header { text-align:center; padding:2rem; border-bottom:1px solid rgba(201,168,76,.2); }
 .school-name { font-family:'Cinzel Decorative',cursive; font-size:2rem; color:var(--gold-light); }
-.rubrique-bar { display:flex; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); padding:0 2rem; }
-.rubrique-tab { padding:1rem; font-family:'Cinzel Decorative'; font-size:.6rem; color:var(--muted); cursor:pointer; text-transform:uppercase; transition: 0.3s; }
+.rubrique-bar { display:flex; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); padding:0 2rem; overflow-x: auto; }
+.rubrique-tab { padding:1rem; font-family:'Cinzel Decorative'; font-size:.65rem; color:var(--muted); cursor:pointer; text-transform:uppercase; transition: 0.3s; white-space: nowrap; }
 .rubrique-tab.active-matieres { color:var(--gold-light); border-bottom: 2px solid var(--gold); }
-.rubrique-tab.active-ferrox { color:#e87070; border-bottom: 2px solid var(--accent-ferrox); }
-.rubrique-tab.active-academie { color:#70a0e8; border-bottom: 2px solid var(--accent-acad); }
+.rubrique-tab.active-ferrox { color:#e87070; border-bottom: 2px solid #7a1f1f; }
+.rubrique-tab.active-academie { color:#70a0e8; border-bottom: 2px solid #1f3d7a; }
 
 /* LAYOUT */
 .rubrique-panel { display:none; flex:1; }
@@ -40,35 +40,31 @@ nav { width:240px; padding:1.5rem 0; border-right:1px solid rgba(201,168,76,.12)
 .nav-item { padding:.8rem 1.2rem; cursor:pointer; font-size:.9rem; color:var(--muted); border-left:3px solid transparent; }
 .nav-item.active { color:var(--gold-light); background:rgba(201,168,76,0.1); border-left-color:var(--gold); }
 
-/* SYSTEME DE PAGES */
-.page-manager { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; border-bottom: 1px solid rgba(201,168,76,0.1); padding-bottom: 10px; }
-.page-tab { padding: 5px 15px; background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.2); color: var(--muted); cursor: pointer; font-size: 0.8rem; border-radius: 3px; }
-.page-tab.active { background: rgba(201,168,76,0.2); color: var(--gold-light); border-color: var(--gold); }
-.add-page-btn { padding: 5px 12px; background: none; border: 1px dashed var(--gold); color: var(--gold); cursor: pointer; font-size: 0.8rem; border-radius: 3px; }
+/* PAGES */
+.page-manager { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.page-tab { padding: 4px 12px; background: rgba(201, 168, 76, 0.05); border: 1px solid rgba(201, 168, 76, 0.2); color: var(--muted); cursor: pointer; font-size: 0.75rem; border-radius: 2px; }
+.page-tab.active { background: rgba(201, 168, 76, 0.2); color: var(--gold-light); border-color: var(--gold); }
+.add-page-btn { padding: 4px 10px; background: none; border: 1px dashed var(--gold); color: var(--gold); cursor: pointer; font-size: 0.75rem; }
 
 /* EDITOR */
-.content-area { flex:1; padding:2rem; }
+.content-area { flex:1; padding:2rem; overflow-y: auto; height:calc(100vh - 160px); }
 .course-panel { display:none; }
 .course-panel.active { display:block; }
-.course-editor { width:100%; min-height:300px; background:rgba(10,8,4,0.7); border:1px solid rgba(201,168,76,0.2); padding:1rem; color:var(--parchment); font-family:inherit; font-size:1rem; outline:none; resize:vertical; }
-.preview-title { margin: 2rem 0 1rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); border-bottom: 1px solid rgba(201,168,76,0.2); }
-.course-preview { background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 4px; min-height: 100px; white-space: pre-wrap; color:#e0d5ba; border: 1px solid rgba(201,168,76,0.05); }
-
-/* BUTTONS */
-.save-btn { background: var(--gold-dark); color: #000; border: none; padding: 0.6rem 1.5rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-.save-btn:hover { background: var(--gold-light); }
-.del-page { color: #ff4d4d; font-size: 0.7rem; cursor: pointer; margin-left: 10px; opacity: 0.5; }
-.del-page:hover { opacity: 1; }
+.course-editor { width:100%; min-height:250px; background:rgba(10,8,4,0.7); border:1px solid rgba(201,168,76,0.3); padding:1rem; color:var(--parchment); font-family:inherit; font-size:1rem; outline:none; resize:vertical; }
+.course-preview { background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 4px; min-height: 100px; white-space: pre-wrap; color:#e0d5ba; border: 1px solid rgba(201,168,76,0.1); margin-top: 1rem; }
+.preview-h1 { color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.4rem; margin: 1rem 0; display: block; border-bottom: 1px solid rgba(201,168,76,0.2); }
 
 /* IMAGES */
-.image-upload-zone { border: 1px dashed var(--gold-dark); padding: 1.5rem; text-align: center; cursor: pointer; color: var(--gold); margin-top: 2rem; }
-.image-upload-zone.dragover { background: rgba(201,168,76,0.1); }
-.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
-.img-wrap { position: relative; border: 1px solid rgba(201,168,76,0.2); }
-.img-wrap img { width: 100%; height: 80px; object-fit: cover; }
-.img-del { position: absolute; top: 0; right: 0; background: red; color: white; border: none; padding: 2px 5px; cursor: pointer; font-size: 10px; }
+.image-upload-zone { border: 2px dashed rgba(201, 168, 76, 0.3); padding: 2rem; text-align: center; cursor: pointer; color: var(--gold-light); margin-top: 2rem; transition: 0.3s; }
+.image-upload-zone:hover, .image-upload-zone.dragover { background: rgba(201, 168, 76, 0.1); border-color: var(--gold); }
+.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-top: 1rem; }
+.img-wrap { position: relative; border: 1px solid rgba(201, 168, 76, 0.2); aspect-ratio: 4/3; }
+.img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.img-del { position: absolute; top: 2px; right: 2px; background: #7a1f1f; color: white; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; }
 
-#sync-dot { position:fixed; top:1rem; right:1rem; width:10px; height:10px; border-radius:50%; background:var(--gold-dark); }
+.save-btn { background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 0.8rem 2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; text-transform: uppercase; }
+
+#sync-dot { position:fixed; top:1rem; right:1rem; width:10px; height:10px; border-radius:50%; background:#7a1f1f; }
 #sync-dot.ok { background:#50c878; box-shadow: 0 0 10px #50c878; }
 </style>
 </head>
@@ -94,31 +90,25 @@ nav { width:240px; padding:1.5rem 0; border-right:1px solid rgba(201,168,76,.12)
     <div class="rubrique-tab" id="tab-academie" onclick="switchRubrique('academie')">🏛️ Académie</div>
   </div>
 
-  <div id="rubrique-matieres" class="rubrique-panel active">
-    <div class="main-layout"><nav id="nav-matieres"></nav><div class="content-area" id="content-matieres"></div></div>
-  </div>
-  <div id="rubrique-ferrox" class="rubrique-panel">
-    <div class="main-layout"><nav id="nav-ferrox"></nav><div class="content-area" id="content-ferrox"></div></div>
-  </div>
-  <div id="rubrique-academie" class="rubrique-panel">
-    <div class="main-layout"><nav id="nav-academie"></nav><div class="content-area" id="content-academie"></div></div>
-  </div>
+  <div id="rubrique-matieres" class="rubrique-panel active"><div class="main-layout"><nav id="nav-matieres"></nav><div class="content-area" id="content-matieres"></div></div></div>
+  <div id="rubrique-ferrox" class="rubrique-panel"><div class="main-layout"><nav id="nav-ferrox"></nav><div class="content-area" id="content-ferrox"></div></div></div>
+  <div id="rubrique-academie" class="rubrique-panel"><div class="main-layout"><nav id="nav-academie"></nav><div class="content-area" id="content-academie"></div></div></div>
 </div>
 
 <script>
-// --- CONFIG ---
-const MATIERES = [{id:'sortileges',icon:'⚡',label:'Sortilèges'}, {id:'potions',icon:'⚗️',label:'Potions'}, {id:'botanique',icon:'🌿',label:'Botanique'}, {id:'discipline',icon:'📜',label:'Discipline'}, {id:'culinaire',icon:'🍵',label:'Survie'}, {id:'dcfo',icon:'🛡️',label:'DCFO'}, {id:'histoire',icon:'📖',label:'Histoire'}, {id:'vol',icon:'🧹',label:'Vol'}, {id:'creatures',icon:'🐉',label:'Créatures'}, {id:'divination',icon:'🔮',label:'Divination'}];
-const FERROX = [{id:'f-h',icon:'📜',label:'Histoire'}, {id:'f-r',icon:'🩸',label:'Rituels'}, {id:'f-a',icon:'⚔️',label:'Armes'}, {id:'f-al',icon:'🔥',label:'Alchimie'}, {id:'f-c',icon:'🦅',label:'Codes'}, {id:'f-m',icon:'🩻',label:'Hiérarchie'}, {id:'f-ca',icon:'🗺️',label:'Cartographie'}, {id:'f-d',icon:'📁',label:'Divers'}];
-const ACAD = [{id:'a-r',icon:'📋',label:'Règles'}, {id:'a-c',icon:'🎓',label:'Programmes'}, {id:'a-e',icon:'✏️',label:'Examens'}, {id:'a-p',icon:'👤',label:'Profs'}, {id:'a-ev',icon:'🌟',label:'Events'}, {id:'a-ca',icon:'🗺️',label:'Cartographie'}, {id:'a-ar',icon:'🗄️',label:'Archives'}, {id:'a-d',icon:'📁',label:'Divers'}];
+const MATIERES = [{id:'sort',label:'⚡ Sortilèges'}, {id:'pot',label:'⚗️ Potions'}, {id:'bot',label:'🌿 Botanique'}, {id:'disc',label:'📜 Discipline'}, {id:'culi',label:'🍵 Survie'}, {id:'dcfo',label:'🛡️ DCFO'}, {id:'hist',label:'📖 Histoire'}, {id:'vol',label:'🧹 Vol'}, {id:'crea',label:'🐉 Créatures'}, {id:'divi',label:'🔮 Divination'}];
+const FERROX = [{id:'f_h',label:'📜 Histoire'}, {id:'f_r',label:'🩸 Rituels'}, {id:'f_a',label:'⚔️ Armes'}, {id:'f_al',label:'🔥 Alchimie'}, {id:'f_c',label:'🦅 Codes'}, {id:'f_m',label:'🩻 Hiérarchie'}, {id:'f_ca',label:'🗺️ Cartographie'}, {id:'f_d',label:'📁 Divers'}];
+const ACAD = [{id:'a_r',label:'📋 Règles'}, {id:'a_c',label:'🎓 Programmes'}, {id:'a_e',label:'✏️ Examens'}, {id:'a_p',label:'👤 Profs'}, {id:'a_ev',label:'🌟 Events'}, {id:'a_ca',label:'🗺️ Cartographie'}, {id:'a_ar',label:'🗄️ Archives'}, {id:'a_d',label:'📁 Divers'}];
 
 let sb = null;
-let currentPages = {}; // Stocke l'ID de la page active par cours
-const allCourseData = {}; // Cache local des pages
+let allCourseData = {}; 
+let currentPages = {};
+const imageStore = {};
 
-// --- SUPABASE ---
 async function connectSupabase() {
   const url = document.getElementById('input-url').value.trim();
   const key = document.getElementById('input-key').value.trim();
+  if(!url || !key) return;
   sb = supabase.createClient(url, key);
   const {error} = await sb.from('notes').select('id').limit(1);
   if (!error) {
@@ -126,47 +116,49 @@ async function connectSupabase() {
     document.getElementById('setup-overlay').classList.add('hidden');
     document.getElementById('sync-dot').classList.add('ok');
     await loadData();
-  } else { alert("Erreur de connexion"); }
+  } else { alert("Erreur: Vérifiez vos clés et les RLS sur Supabase."); }
 }
 
 async function loadData() {
-  const {data} = await sb.from('notes').select('*').order('created_at', {ascending: true});
-  data.forEach(note => {
-    const [courseId, pageId] = note.id.split('_p_');
-    if(!allCourseData[courseId]) allCourseData[courseId] = [];
-    allCourseData[courseId].push({id: note.id, content: note.content});
+  const {data: notes} = await sb.from('notes').select('*');
+  const {data: imgs} = await sb.from('images').select('*');
+
+  notes?.forEach(n => {
+    const baseId = n.id.split('_p')[0];
+    if(!allCourseData[baseId]) allCourseData[baseId] = [];
+    allCourseData[baseId].push({id: n.id, content: n.content});
   });
-  // Initialiser la première page par défaut si vide
+
+  imgs?.forEach(img => {
+    if(!imageStore[img.course_id]) imageStore[img.course_id] = [];
+    imageStore[img.course_id].push({id: img.id, src: img.src});
+  });
+
   [...MATIERES, ...FERROX, ...ACAD].forEach(c => {
-    if(!allCourseData[c.id]) allCourseData[c.id] = [{id: c.id + '_p_1', content: ''}];
+    if(!allCourseData[c.id]) allCourseData[c.id] = [{id: c.id + '_p1', content: ''}];
     renderPageSystem(c.id);
+    renderGrid(c.id);
   });
 }
 
-// --- LOGIQUE MULTI-PAGES ---
 function renderPageSystem(courseId) {
   const manager = document.getElementById('pages-' + courseId);
-  if(!manager) return;
-  const pages = allCourseData[courseId];
+  const pages = allCourseData[courseId] || [{id: courseId + '_p1', content: ''}];
   if(!currentPages[courseId]) currentPages[courseId] = pages[0].id;
 
-  let html = pages.map((p, index) => `
+  manager.innerHTML = pages.map((p, i) => `
     <div class="page-tab ${currentPages[courseId] === p.id ? 'active' : ''}" onclick="switchPage('${courseId}', '${p.id}')">
-      Page ${index + 1}
-      ${index > 0 ? `<span class="del-page" onclick="deletePage(event, '${courseId}', '${p.id}')">✖</span>` : ''}
+      Page ${i + 1} ${i > 0 ? `<span onclick="deletePage(event, '${courseId}', '${p.id}')" style="margin-left:5px;color:red">×</span>` : ''}
     </div>
-  `).join('');
-  html += `<button class="add-page-btn" onclick="addNewPage('${courseId}')">+ Ajouter une Page</button>`;
-  manager.innerHTML = html;
+  `).join('') + `<button class="add-page-btn" onclick="addNewPage('${courseId}')">+ Page</button>`;
 
-  // Mettre à jour l'éditeur
   const activePage = pages.find(p => p.id === currentPages[courseId]);
   document.getElementById('editor-' + courseId).value = activePage.content;
   updatePreview(courseId);
 }
 
 function addNewPage(courseId) {
-  const newId = courseId + '_p_' + Date.now();
+  const newId = courseId + '_p' + Date.now();
   allCourseData[courseId].push({id: newId, content: ''});
   currentPages[courseId] = newId;
   renderPageSystem(courseId);
@@ -177,78 +169,82 @@ function switchPage(courseId, pageId) {
   renderPageSystem(courseId);
 }
 
-async function deletePage(e, courseId, pageId) {
-  e.stopPropagation();
-  if(!confirm("Supprimer cette page définitivement ?")) return;
-  await sb.from('notes').delete().eq('id', pageId);
-  allCourseData[courseId] = allCourseData[courseId].filter(p => p.id !== pageId);
-  currentPages[courseId] = allCourseData[courseId][0].id;
-  renderPageSystem(courseId);
-}
-
-// --- SAVE & UI ---
 async function saveCourse(courseId) {
   const pageId = currentPages[courseId];
   const content = document.getElementById('editor-' + courseId).value;
   const {error} = await sb.from('notes').upsert({id: pageId, content: content});
   if(!error) {
-    const pageObj = allCourseData[courseId].find(p => p.id === pageId);
-    pageObj.content = content;
+    const p = allCourseData[courseId].find(x => x.id === pageId);
+    p.content = content;
     updatePreview(courseId);
-    alert("Page sauvegardée !");
+    alert("Savoir sauvegardé !");
   }
 }
 
 function updatePreview(id) {
   const val = document.getElementById('editor-' + id).value;
   document.getElementById('prev-' + id).innerHTML = val
-    .replace(/^# (.*$)/gim, '<h1 style="color:var(--gold-light); font-family:Cinzel Decorative; font-size:1.2rem; margin-bottom:10px;">$1</h1>')
-    .replace(/^• (.*$)/gim, '<div style="margin-bottom:5px;">● $1</div>');
+    .replace(/^# (.*$)/gim, '<span class="preview-h1">$1</span>')
+    .replace(/^• (.*$)/gim, '<div>• $1</div>');
 }
 
-function buildPanel(c, rub) {
+// --- IMAGES & DRAG AND DROP ---
+async function uploadImage(courseId, file) {
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const b64 = e.target.result;
+    const {data, error} = await sb.from('images').insert({course_id: courseId, src: b64}).select().single();
+    if(!error) {
+      if(!imageStore[courseId]) imageStore[courseId] = [];
+      imageStore[courseId].push({id: data.id, src: b64});
+      renderGrid(courseId);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleDrop(e, courseId) {
+  e.preventDefault();
+  const zone = document.getElementById('dz-' + courseId);
+  zone.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  for(let f of files) uploadImage(courseId, f);
+}
+
+function renderGrid(id) {
+  const g = document.getElementById('grid-' + id);
+  if(!g) return;
+  g.innerHTML = (imageStore[id] || []).map((img, i) => `
+    <div class="img-wrap"><img src="${img.src}"><button class="img-del" onclick="delImg('${id}', ${i})">×</button></div>
+  `).join('');
+}
+
+async function delImg(courseId, i) {
+  const img = imageStore[courseId][i];
+  await sb.from('images').delete().eq('id', img.id);
+  imageStore[courseId].splice(i, 1);
+  renderGrid(courseId);
+}
+
+// --- UI HELPERS ---
+function buildPanel(c) {
   return `
   <div id="panel-${c.id}" class="course-panel">
-    <h2 style="font-family:Cinzel Decorative; color:var(--gold-light); margin-bottom:10px;">${c.icon} ${c.label}</h2>
-    
+    <h2 style="font-family:Cinzel Decorative; color:var(--gold-light); margin-bottom:1rem;">${c.label}</h2>
     <div class="page-manager" id="pages-${c.id}"></div>
-
-    <div class="editor-toolbar">
-      <button style="background:none; color:var(--muted); border:1px solid #333; padding:2px 8px; font-size:10px; cursor:pointer;" onclick="ins('${c.id}','# ')">Titre</button>
-      <button style="background:none; color:var(--muted); border:1px solid #333; padding:2px 8px; font-size:10px; cursor:pointer;" onclick="ins('${c.id}','• ')">Liste</button>
-    </div>
-    <textarea class="course-editor" id="editor-${c.id}" placeholder="Écrivez ici..."></textarea>
-    <button class="save-btn" onclick="saveCourse('${c.id}')">✦ Sauvegarder cette page</button>
-
-    <div class="preview-title">📜 Aperçu du Grimoire</div>
+    <textarea class="course-editor" id="editor-${c.id}" oninput="updatePreview('${c.id}')"></textarea>
+    <button class="save-btn" onclick="saveCourse('${c.id}')">✦ Sauvegarder la page</button>
     <div class="course-preview" id="prev-${c.id}"></div>
-
-    <div class="preview-title">🖼️ Images</div>
-    <div class="image-upload-zone" id="dz-${c.id}" ondrop="hDrop(event, '${c.id}')" ondragover="event.preventDefault()">Glissez vos images ici</div>
+    <div class="image-upload-zone" id="dz-${c.id}" 
+         ondragover="event.preventDefault(); this.classList.add('dragover')" 
+         ondragleave="this.classList.remove('dragover')"
+         ondrop="handleDrop(event, '${c.id}')"
+         onclick="document.getElementById('f-${c.id}').click()">
+      Glissez vos images ici ou cliquez
+    </div>
+    <input type="file" id="f-${c.id}" hidden multiple onchange="for(let f of this.files) uploadImage('${c.id}', f)">
     <div class="image-grid" id="grid-${c.id}"></div>
   </div>`;
-}
-
-// --- NAVIGATION ---
-function switchRubrique(n) {
-  document.querySelectorAll('.rubrique-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.rubrique-tab').forEach(t => t.className = 'rubrique-tab');
-  document.getElementById('rubrique-' + n).classList.add('active');
-  document.getElementById('tab-' + n).classList.add('active-' + n);
-}
-
-function showCourse(id, el, rub) {
-  document.querySelectorAll('.course-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
-  el.classList.add('active');
-}
-
-function ins(id, t) {
-  const ta = document.getElementById('editor-' + id);
-  const s = ta.selectionStart;
-  ta.value = ta.value.substring(0, s) + t + ta.value.substring(ta.selectionEnd);
-  ta.focus();
 }
 
 function buildAll() {
@@ -256,46 +252,33 @@ function buildAll() {
   configs.forEach(conf => {
     const nav = document.getElementById('nav-' + conf.r), cont = document.getElementById('content-' + conf.r);
     conf.c.forEach((c, i) => {
-      nav.innerHTML += `<div class="nav-item ${i === 0 ? 'active' : ''}" onclick="showCourse('${c.id}',this,'${conf.r}')">${c.icon} ${c.label}</div>`;
-      cont.innerHTML += buildPanel(c, conf.r);
+      nav.innerHTML += `<div class="nav-item ${i === 0 ? 'active' : ''}" onclick="showCourse('${c.id}',this)">${c.label}</div>`;
+      cont.innerHTML += buildPanel(c);
     });
   });
 }
 
-// --- IMAGES ---
-async function hDrop(e, id) {
-  e.preventDefault();
-  const files = e.dataTransfer.files;
-  for (const f of files) {
-    const r = new FileReader();
-    r.onload = async (ev) => {
-      const b64 = ev.target.result;
-      const {data} = await sb.from('images').insert({course_id: id, src: b64}).select().single();
-      if(!imageStore[id]) imageStore[id] = [];
-      imageStore[id].push({id: data.id, src: b64});
-      renderGrid(id);
-    };
-    r.readAsDataURL(f);
-  }
+function showCourse(id, el) {
+  document.querySelectorAll('.course-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  el.classList.add('active');
 }
 
-function renderGrid(id) {
-  const g = document.getElementById('grid-' + id);
-  g.innerHTML = (imageStore[id] || []).map((img, i) => `
-    <div class="img-wrap"><img src="${img.src}"><button class="img-del" onclick="delImg('${id}', ${i})">X</button></div>
-  `).join('');
-}
-
-async function delImg(id, i) {
-  const img = imageStore[id][i];
-  await sb.from('images').delete().eq('id', img.id);
-  imageStore[id].splice(i, 1);
-  renderGrid(id);
+function switchRubrique(n) {
+  document.querySelectorAll('.rubrique-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.rubrique-tab').forEach(t => t.className = 'rubrique-tab');
+  document.getElementById('rubrique-' + n).classList.add('active');
+  document.getElementById('tab-' + n).classList.add('active-' + n);
 }
 
 buildAll();
-const savedUrl = localStorage.getItem('sb_url');
-if(savedUrl) initSupabase();
+const u = localStorage.getItem('sb_url'), k = localStorage.getItem('sb_key');
+if(u && k) { 
+  document.getElementById('input-url').value = u; 
+  document.getElementById('input-key').value = k;
+  connectSupabase(); 
+}
 </script>
 </body>
 </html>
