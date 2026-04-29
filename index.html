@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* --- STYLES RESTAURÉS ET FIXÉS --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
   --gold: #c9a84c; --gold-light: #e8c97a; --gold-dark: #8a6a1f;
@@ -29,24 +28,28 @@ body { background:#0a0804; font-family:'IM Fell English',serif; color:var(--parc
 .setup-input { width:100%; background:rgba(8,6,2,.8); border:1px solid rgba(201,168,76,.2); border-radius:3px; color:var(--parchment); padding:.6rem .9rem; margin-bottom:1rem; outline:none; }
 .setup-btn { width:100%; background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05)); border:1px solid rgba(201,168,76,.4); color:var(--gold-light); font-family:'Cinzel Decorative'; padding:.75rem; cursor:pointer; text-transform:uppercase; border-radius:3px; }
 
-/* HEADER & TABS */
+/* HEADER */
 header { text-align:center; padding:2.2rem 2rem 1.5rem; border-bottom:1px solid rgba(201,168,76,.2); }
-.school-name { font-family:'Cinzel Decorative',cursive; font-size:clamp(1.3rem,3.5vw,2.5rem); color:var(--gold-light); }
+.header-ornament { font-size:22px; color:var(--gold); letter-spacing:18px; margin-bottom:.4rem; display:block; opacity:.6; }
+.school-name { font-family:'Cinzel Decorative',cursive; font-size:clamp(1.3rem,3.5vw,2.5rem); color:var(--gold-light); text-shadow:0 0 40px rgba(201,168,76,.35); }
+
+/* RUBRIQUE BAR */
 .rubrique-bar { display:flex; align-items:center; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); padding:0 2rem; overflow-x:auto; }
-.rubrique-tab { padding:.9rem 1.8rem; font-family:'Cinzel Decorative'; font-size:.62rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; text-transform:uppercase; white-space:nowrap; }
+.rubrique-tab { padding:.9rem 1.8rem; font-family:'Cinzel Decorative'; font-size:.62rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; text-transform:uppercase; }
 .rubrique-tab.active-matieres { color:var(--gold-light); border-bottom-color:var(--gold); }
 .rubrique-tab.active-ferrox { color:#e87070; border-bottom-color:var(--accent-ferrox-light); }
 .rubrique-tab.active-academie { color:#70a0e8; border-bottom-color:var(--accent-acad-light); }
 
-/* LAYOUT */
+/* LAYOUT & NAV */
 .rubrique-panel { display:none; flex:1; }
 .rubrique-panel.active { display:flex; }
 .main-layout { display:flex; flex:1; max-width:1300px; margin:0 auto; width:100%; }
 nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgba(201,168,76,.12); position:sticky; top:0; height:calc(100vh - 158px); overflow-y:auto; }
-.nav-item { display:flex; align-items:center; gap:.7rem; padding:.65rem 1.2rem; cursor:pointer; font-size:.88rem; color:var(--muted); border-left:3px solid transparent; }
-.nav-item.active { color:var(--gold-light); background:rgba(201,168,76,.08); border-left-color:var(--gold); }
-.nav-item.active-ferrox-item { color:#e87070 !important; background:rgba(122,31,31,.1); border-left-color:var(--accent-ferrox-light); }
-.nav-item.active-acad-item { color:#70a0e8 !important; background:rgba(31,61,122,.1); border-left-color:var(--accent-acad-light); }
+.nav-title { font-family:'Cinzel Decorative'; font-size:.55rem; color:var(--muted); letter-spacing:.22em; padding:0 1.2rem .8rem; border-bottom:1px solid rgba(201,168,76,0.1); margin-bottom:.4rem; }
+.nav-item { display:flex; align-items:center; gap:.7rem; padding:.65rem 1.2rem; cursor:pointer; font-size:.88rem; color:var(--muted); border-left:3px solid transparent; transition:0.2s; }
+.nav-item.active { color:var(--gold-light); background:rgba(201,168,76,0.08); border-left-color:var(--gold); }
+.nav-item.active-ferrox-item { color:#e87070 !important; background:rgba(122,31,31,0.1); border-left-color:var(--accent-ferrox-light); }
+.nav-item.active-acad-item { color:#70a0e8 !important; background:rgba(31,61,122,0.1); border-left-color:var(--accent-acad-light); }
 
 /* EDITOR & PREVIEW */
 .content-area { flex:1; padding:2rem 2.5rem; }
@@ -56,22 +59,25 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 .course-editor { width:100%; min-height:250px; background:rgba(10,8,4,0.8); border:1px solid rgba(201,168,76,0.2); border-top:none; padding:1rem; color:var(--parchment); font-family:inherit; font-size:1rem; outline:none; resize:vertical; }
 
 .preview-title { margin-top: 3rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); letter-spacing: 0.1em; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-.course-preview { background: rgba(240, 230, 204, 0.03); border: 1px solid rgba(201, 168, 76, 0.1); padding: 2rem; border-radius: 4px; line-height: 1.8; color: #e0d5ba; min-height: 100px; white-space: pre-wrap; margin-bottom: 3rem; transition: background 0.3s; }
+.course-preview { background: rgba(240, 230, 204, 0.03); border: 1px solid rgba(201, 168, 76, 0.1); padding: 2rem; border-radius: 4px; line-height: 1.8; color: #e0d5ba; min-height: 100px; white-space: pre-wrap; margin-bottom: 3rem; }
 .preview-h1 { color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.5rem; display: block; margin-top: 1rem; border-bottom: 1px solid rgba(201,168,76,0.2); }
 
 /* IMAGES GRID */
-.image-upload-zone { border:1.5px dashed rgba(201,168,76,.25); padding:1.5rem; text-align:center; cursor:pointer; margin-bottom:1rem; color:var(--muted); }
-.image-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:1rem; }
-.image-card { position:relative; border:1px solid rgba(201,168,76,0.2); aspect-ratio:1/1; overflow:hidden; }
-.image-card img { width:100%; height:100%; object-fit:cover; }
-.del-btn { position:absolute; top:5px; right:5px; background:red; color:white; border:none; padding:2px 6px; cursor:pointer; font-size:10px; }
+.image-upload-zone { border:1.5px dashed rgba(201,168,76,.25); padding:2rem; text-align:center; cursor:pointer; margin-bottom:1rem; color:var(--gold-light); background: rgba(201,168,76,0.02); }
+.image-upload-zone:hover { background: rgba(201,168,76,0.05); border-color: var(--gold); }
+.image-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:15px; margin-top:1rem; }
+.image-card { position:relative; border-radius:4px; overflow:hidden; border:1px solid rgba(201,168,76,.15); background:rgba(8,6,2,.5); aspect-ratio:4/3; }
+.image-card img { width:100%; height:100%; object-fit:cover; transition:0.3s; }
+.image-card-overlay { position:absolute; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:.2s; }
+.image-card:hover .image-card-overlay { opacity:1; }
+.del-btn { background:rgba(122,31,31,0.8); border:1px solid #c43030; color:white; padding:4px 8px; font-size:10px; cursor:pointer; border-radius:2px; }
 
-/* BOUTON SAUVEGARDE */
+/* SAVE */
 .save-row { margin-top:1rem; display:flex; justify-content: flex-end; }
 .save-btn { background: linear-gradient(to bottom, #c9a84c, #8a6a1f); color: #0a0804; border: none; padding: 0.8rem 2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-.save-btn:active { transform: translateY(2px); }
+.save-btn:hover { background: #e8c97a; transform: translateY(-1px); }
 
-#sync-dot { position:fixed; top:1rem; right:1rem; z-index:500; width:10px; height:10px; border-radius:50%; background:var(--gold-dark); }
+#sync-dot { position:fixed; top:1rem; right:1rem; z-index:500; width:10px; height:10px; border-radius:50%; background:var(--gold-dark); transition: 0.3s; }
 #sync-dot.ok { background:#50c878; box-shadow: 0 0 10px #50c878; }
 #status-bar { position:fixed; bottom:1rem; right:1rem; z-index:500; }
 .toast { background:rgba(10,8,4,0.95); border:1px solid var(--gold); padding:0.6rem 1.2rem; color:var(--gold-light); border-radius:4px; font-size:0.9rem; margin-top:0.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -93,7 +99,7 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 <div class="site-wrapper">
   <header>
     <div class="school-name">École des Arts Arcanes</div>
-    <div style="font-style:italic; color:var(--muted); font-size:0.9rem;">Registre de Pédagogie Arcanique — GTA RP</div>
+    <div style="font-style:italic; color:var(--muted); font-size:0.9rem;">Registre de Pédagogie Arcanique</div>
   </header>
 
   <div class="rubrique-bar">
@@ -103,20 +109,20 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
   </div>
 
   <div id="rubrique-matieres" class="rubrique-panel active">
-    <div class="main-layout"><nav id="nav-matieres"></nav><div class="content-area" id="content-matieres"></div></div>
+    <div class="main-layout"><nav id="nav-matieres"><div class="nav-title">GRIMOIRE</div></nav><div class="content-area" id="content-matieres"></div></div>
   </div>
   <div id="rubrique-ferrox" class="rubrique-panel">
-    <div class="main-layout"><nav id="nav-ferrox"></nav><div class="content-area" id="content-ferrox"></div></div>
+    <div class="main-layout"><nav id="nav-ferrox"><div class="nav-title" style="color:#e87070">FERROX</div></nav><div class="content-area" id="content-ferrox"></div></div>
   </div>
   <div id="rubrique-academie" class="rubrique-panel">
-    <div class="main-layout"><nav id="nav-academie"></nav><div class="content-area" id="content-academie"></div></div>
+    <div class="main-layout"><nav id="nav-academie"><div class="nav-title" style="color:#70a0e8">ACADÉMIE</div></nav><div class="content-area" id="content-academie"></div></div>
   </div>
 </div>
 
 <div id="status-bar"></div>
 
 <script>
-// --- DONNÉES RESTAURÉES ---
+// --- DONNÉES ---
 const MATIERES = [
   {id:'sortileges',icon:'⚡',label:'Sortilèges'}, {id:'potions',icon:'⚗️',label:'Potions'},
   {id:'botanique',icon:'🌿',label:'Botanique'}, {id:'discipline',icon:'📜',label:'Discipline'},
@@ -151,7 +157,7 @@ async function connectSupabase() {
     localStorage.setItem('sb_url', url); localStorage.setItem('sb_key', key);
     document.getElementById('setup-overlay').classList.add('hidden');
     setSyncDot('ok'); await loadAllData();
-  } catch(e) { alert("Clés invalides."); }
+  } catch(e) { alert("Accès refusé."); }
 }
 
 async function initSupabase() {
@@ -178,31 +184,28 @@ async function loadAllData() {
   [...MATIERES, ...FERROX_COURSES, ...ACADEMIE_COURSES].forEach(c => renderGrid(c.id));
 }
 
-// --- LOGIQUE SAUVEGARDE ET PREVIEW ---
+// --- SAUVEGARDE ET PREVIEW ---
 async function saveCourse(id) {
+  if (!sb) return;
   const ta = document.getElementById('editor-'+id);
-  if (!ta || !sb) return;
-  
-  const content = ta.value;
-  const {error} = await sb.from('notes').upsert({id, content, updated_at: new Date().toISOString()});
-  
+  const {error} = await sb.from('notes').upsert({id, content: ta.value, updated_at: new Date().toISOString()});
   if (!error) {
-    updatePreview(id); // On ne met à jour la preview que ICI
-    toast("Savoir enregistré dans le Grimoire ✓");
+    updatePreview(id);
+    toast("Savoir gravé avec succès ✓");
   }
 }
 
 function updatePreview(id) {
   const ta = document.getElementById('editor-'+id), prev = document.getElementById('preview-'+id);
   if(!ta || !prev) return;
-  // On génère le HTML à partir du texte sauvegardé
   prev.innerHTML = ta.value
     .replace(/^# (.*$)/gim, '<span class="preview-h1">$1</span>')
-    .replace(/^• (.*$)/gim, '<div>• $1</div>') || 'Le parchemin est vide.';
+    .replace(/^• (.*$)/gim, '<div>• $1</div>') || '<p style="opacity:0.3">En attente de rédaction...</p>';
 }
 
 // --- IMAGES ---
 async function addImages(id, input) {
+  if (!sb) return;
   for (const file of input.files) {
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -224,7 +227,9 @@ function renderGrid(id) {
   grid.innerHTML = (imageStore[id]||[]).map((img, i) => `
     <div class="image-card">
       <img src="${img.src}">
-      <button class="del-btn" onclick="deleteImg('${id}', ${i})">X</button>
+      <div class="image-card-overlay">
+        <button class="del-btn" onclick="deleteImg('${id}', ${i})">Supprimer</button>
+      </div>
     </div>`).join('');
 }
 
@@ -234,7 +239,7 @@ async function deleteImg(courseId, idx) {
   imageStore[courseId].splice(idx,1); renderGrid(courseId);
 }
 
-// --- UI BUILDER ---
+// --- UI ---
 function buildPanel(c, rub) {
   return `
   <div id="panel-${c.id}" class="course-panel">
@@ -243,16 +248,14 @@ function buildPanel(c, rub) {
         <button class="toolbar-btn" onclick="ins('${c.id}','# ')">Titre</button>
         <button class="toolbar-btn" onclick="ins('${c.id}','• ')">Liste</button>
     </div>
-    <textarea class="course-editor" id="editor-${c.id}" placeholder="Écrivez votre cours..."></textarea>
-    <div class="save-row">
-        <button class="save-btn" onclick="saveCourse('${c.id}')">✦ Sauvegarder dans le Grimoire</button>
-    </div>
+    <textarea class="course-editor" id="editor-${c.id}" placeholder="Inscrivez votre savoir..."></textarea>
+    <div class="save-row"><button class="save-btn" onclick="saveCourse('${c.id}')">✦ Sauvegarder dans le Grimoire</button></div>
     
-    <div class="preview-title">📜 Version figée du cours</div>
+    <div class="preview-title">📜 Lecture du Grimoire (Version enregistrée)</div>
     <div class="course-preview" id="preview-${c.id}"></div>
 
     <div class="preview-title">🖼️ Iconographie (Images)</div>
-    <div class="image-upload-zone" onclick="document.getElementById('file-${c.id}').click()">Cliquez pour ajouter des images</div>
+    <div class="image-upload-zone" onclick="document.getElementById('file-${c.id}').click()">✦ Ajouter des parchemins visuels</div>
     <input type="file" id="file-${c.id}" hidden multiple onchange="addImages('${c.id}',this)">
     <div class="image-grid" id="grid-${c.id}"></div>
   </div>`;
@@ -297,7 +300,7 @@ function setSyncDot(s) { document.getElementById('sync-dot').className = s; }
 function toast(m) {
   const bar = document.getElementById('status-bar');
   const e = document.createElement('div'); e.className = 'toast'; e.textContent = m;
-  bar.appendChild(e); setTimeout(()=>e.remove(), 3000);
+  bar.appendChild(e); setTimeout(()=>e.remove(), 2500);
 }
 
 buildAll();
