@@ -37,23 +37,18 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
 .delete-page-icon { color: var(--blood); cursor: pointer; font-family: 'Cinzel Decorative'; font-size: 0.7rem; letter-spacing: 1px; border: 1px solid var(--blood); padding: 5px 10px; border-radius: 3px; transition: 0.3s; }
 .delete-page-icon:hover { background: var(--blood); color: white; }
 
-/* CHAMP TITRE */
-.page-title-input {
-    width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(201,168,76,0.3);
-    color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.2rem; padding: 10px 0; margin-bottom: 1rem; outline: none;
-}
-.page-title-input:focus { border-bottom-color: var(--gold); }
+.page-title-display { font-family: 'Cinzel Decorative'; color: var(--gold-light); font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 5px; }
 
 .course-editor { 
-  width:100%; min-height:350px; background:rgba(10,8,4,0.6); 
+  width:100%; min-height:400px; background:rgba(10,8,4,0.6); 
   border:1px solid rgba(201,168,76,0.3); padding:1.5rem; 
   color:var(--parchment); font-family:inherit; font-size:1.1rem; 
   outline:none; line-height: 1.6; border-radius: 4px;
 }
-.course-editor img, .course-preview img { max-width: 90%; height: auto; display: block; margin: 1rem auto; border: 1px solid var(--gold-dark); border-radius: 3px; }
+.course-editor img { max-width: 90%; height: auto; display: block; margin: 1rem auto; border: 1px solid var(--gold-dark); border-radius: 3px; }
 
-.page-manager { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
-.page-tab { padding: 6px 14px; background: rgba(201, 168, 76, 0.05); border: 1px solid rgba(201, 168, 76, 0.2); color: var(--muted); cursor: pointer; font-size: 0.8rem; border-radius: 3px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.page-manager { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+.page-tab { padding: 6px 14px; background: rgba(201, 168, 76, 0.05); border: 1px solid rgba(201, 168, 76, 0.2); color: var(--muted); cursor: pointer; font-size: 0.8rem; border-radius: 3px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .page-tab.active { background: rgba(201, 168, 76, 0.2); color: var(--gold-light); border-color: var(--gold); }
 
 .save-btn { width: 100%; background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 1.2rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; border-radius: 3px; letter-spacing: 1px; }
@@ -76,7 +71,7 @@ nav { width:260px; min-width:260px; padding:1rem 0; border-right:1px solid rgba(
   <div class="main-layout">
     <nav id="side-nav"><div id="nav-items-container"></div></nav>
     <div class="content-area" id="main-content">
-        <div style="text-align: center; margin-top: 5rem; opacity: 0.3;"><p>✦ Sélectionnez un enseignement ✦</p></div>
+        <div style="text-align: center; margin-top: 5rem; opacity: 0.3;"><p>✦ Sélectionnez un chapitre pour commencer ✦</p></div>
     </div>
   </div>
 </div>
@@ -100,8 +95,7 @@ async function loadAll() {
   data?.forEach(n => {
     const baseId = n.id.split('_p')[0];
     if(!allCourseData[baseId]) allCourseData[baseId] = [];
-    // On récupère le titre s'il existe, sinon "Page X"
-    allCourseData[baseId].push({id: n.id, content: n.content, title: n.title || ""});
+    allCourseData[baseId].push({id: n.id, content: n.content, title: n.title || "Page " + (allCourseData[baseId].length + 1)});
   });
   switchRubrique('matieres');
   document.getElementById('sync-dot').classList.add('ok');
@@ -119,7 +113,7 @@ function selectCourse(id, label) {
     currentCourseId = id;
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if(document.getElementById('nav-' + id)) document.getElementById('nav-' + id).classList.add('active');
-    if(!allCourseData[id]) allCourseData[id] = [{id: id + '_p1', content: '', title: ''}];
+    if(!allCourseData[id]) allCourseData[id] = [{id: id + '_p1', content: '', title: 'Introduction'}];
     currentPageId = allCourseData[id][0].id;
     renderEditor(label);
 }
@@ -136,15 +130,15 @@ function renderEditor(label) {
         </div>
         
         <div class="page-manager">
-            ${pages.map((p, i) => `<div class="page-tab ${currentPageId === p.id ? 'active' : ''}" onclick="switchPage('${p.id}')">${p.title || 'Page '+(i+1)}</div>`).join('')}
-            <button class="page-tab" style="border:1px dashed var(--gold)" onclick="addPage()">+ Nouvelle</button>
+            ${pages.map((p, i) => `<div class="page-tab ${currentPageId === p.id ? 'active' : ''}" onclick="switchPage('${p.id}')">${p.title}</div>`).join('')}
+            <button class="page-tab" style="border:1px dashed var(--gold); color:var(--gold)" onclick="addPage()">+ Nouvelle Page</button>
         </div>
 
-        <input type="text" class="page-title-input" id="page-title" placeholder="Titre de la page..." value="${activePage.title || ''}">
+        <div class="page-title-display">${activePage.title}</div>
         
-        <div class="course-editor" id="editor" contenteditable="true">${activePage.content}</div>
+        <div class="course-editor" id="editor" contenteditable="true" placeholder="Écrivez votre grimoire ici...">${activePage.content}</div>
         
-        <button class="save-btn" onclick="save()">✦ Enregistrer dans le Grimoire</button>
+        <button class="save-btn" onclick="save()">✦ Consigner dans le Grimoire</button>
     `;
     const ed = document.getElementById('editor');
     ed.addEventListener('paste', handlePaste);
@@ -162,8 +156,7 @@ function handleDrop(e) {
     if (document.caretRangeFromPoint) {
         let range = document.caretRangeFromPoint(e.clientX, e.clientY);
         let sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
+        sel.removeAllRanges(); sel.addRange(range);
     }
     for (let file of e.dataTransfer.files) { if (file.type.startsWith('image/')) insertImageAtCursor(file); }
 }
@@ -171,17 +164,11 @@ function handleDrop(e) {
 function insertImageAtCursor(file) {
     const reader = new FileReader();
     reader.onload = (e) => { 
-        const img = document.createElement("img"); 
-        img.src = e.target.result;
+        const img = document.createElement("img"); img.src = e.target.result;
         const sel = window.getSelection();
         if (sel.rangeCount) {
-            const range = sel.getRangeAt(0);
-            range.deleteContents();
-            range.insertNode(img);
-            range.setStartAfter(img);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
+            const range = sel.getRangeAt(0); range.deleteContents(); range.insertNode(img);
+            range.setStartAfter(img); range.collapse(true); sel.removeAllRanges(); sel.addRange(range);
         } else { document.getElementById('editor').appendChild(img); }
     };
     reader.readAsDataURL(file);
@@ -192,38 +179,40 @@ function switchPage(pid) {
     renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label); 
 }
 
+// --- NOUVELLE FONCTION AVEC TITRE À LA CRÉATION ---
 function addPage() {
+    let newTitle = prompt("Quel est le nom de cette nouvelle page ?", "Nouveau Chapitre");
+    
+    if (newTitle === null) return; // Annule si on clique sur annuler
+    if (newTitle.trim() === "") newTitle = "Page sans titre";
+
     const newId = currentCourseId + '_p' + Date.now();
-    allCourseData[currentCourseId].push({id: newId, content: '', title: ''});
+    allCourseData[currentCourseId].push({id: newId, content: '', title: newTitle});
     currentPageId = newId;
     renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label);
 }
 
 async function deleteCurrentPage() {
-    if (!confirm("Voulez-vous vraiment déchirer cette page ?")) return;
+    if (!confirm("Voulez-vous vraiment détruire cette page ?")) return;
     await sb.from('notes').delete().eq('id', currentPageId);
     allCourseData[currentCourseId] = allCourseData[currentCourseId].filter(p => p.id !== currentPageId);
-    if (allCourseData[currentCourseId].length === 0) allCourseData[currentCourseId] = [{id: currentCourseId + '_p1', content: '', title: ''}];
+    if (allCourseData[currentCourseId].length === 0) allCourseData[currentCourseId] = [{id: currentCourseId + '_p1', content: '', title: 'Introduction'}];
     currentPageId = allCourseData[currentCourseId][0].id;
     renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label);
 }
 
 async function save() {
     const content = document.getElementById('editor').innerHTML;
-    const title = document.getElementById('page-title').value;
+    const p = allCourseData[currentCourseId].find(p => p.id === currentPageId);
     
-    // Note : Assure-toi que ta table Supabase 'notes' possède bien une colonne 'title' (text)
     const { error } = await sb.from('notes').upsert({
         id: currentPageId, 
         content: content, 
-        title: title 
+        title: p.title 
     });
 
     if(!error) {
-        const p = allCourseData[currentCourseId].find(p => p.id === currentPageId);
-        if(p) { p.content = content; p.title = title; }
-        // On rafraîchit pour mettre à jour le nom de l'onglet
-        renderEditor(DATA[currentRubrique].find(c => c.id === currentCourseId).label);
+        p.content = content;
         alert("Savoir consigné ✓");
     } else {
         alert("Erreur de magie : " + error.message);
