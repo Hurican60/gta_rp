@@ -66,18 +66,18 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 
 /* PREVIEW SYSTEM */
 .preview-title { margin-top: 3rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); letter-spacing: 0.2em; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-.course-preview { background: rgba(240, 230, 204, 0.02); border: 1px solid rgba(201, 168, 76, 0.08); padding: 2.5rem; border-radius: 4px; line-height: 1.9; color: #e0d5ba; white-space: pre-wrap; font-size: 1.05rem; margin-bottom: 4rem; transition: background 0.5s; }
+.course-preview { background: rgba(240, 230, 204, 0.02); border: 1px solid rgba(201, 168, 76, 0.12); padding: 2.5rem; border-radius: 4px; line-height: 1.9; color: #e0d5ba; white-space: pre-wrap; font-size: 1.05rem; margin-bottom: 4rem; transition: all 0.4s; }
 .preview-h1 { color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.6rem; margin: 1rem 0; display: block; border-bottom: 1px solid rgba(201,168,76,0.15); }
 .preview-h2 { color: var(--gold); font-family: 'Cinzel Decorative'; font-size: 1.2rem; margin: 1rem 0; display: block; }
 .preview-bullet { color: var(--gold); margin-right: 10px; font-weight: bold; }
 
-/* ANIMATION QUAND ON ENREGISTRE */
-.save-flash { background: rgba(201, 168, 76, 0.15) !important; }
+/* FEEDBACK SAUVEGARDE */
+.save-flash { background: rgba(201, 168, 76, 0.1) !important; border-color: var(--gold) !important; box-shadow: 0 0 15px rgba(201, 168, 76, 0.1); }
 
 /* SAVE ROW */
 .save-row { display:flex; align-items:center; justify-content:space-between; margin-top:1rem; }
-.save-btn { background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04)); border:1px solid rgba(201,168,76,.35); color:var(--gold-light); font-family:'Cinzel Decorative'; font-size:.58rem; padding:.6rem 1.5rem; cursor:pointer; text-transform:uppercase; transition: 0.2s; }
-.save-btn:hover { background:rgba(201, 168, 76, 0.15); border-color:var(--gold); }
+.save-btn { background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.05)); border:1px solid var(--gold-dark); color:var(--gold-light); font-family:'Cinzel Decorative'; font-size:.65rem; padding:.7rem 2rem; cursor:pointer; text-transform:uppercase; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.save-btn:hover { background:rgba(201, 168, 76, 0.25); border-color:var(--gold-light); transform: translateY(-1px); }
 .save-btn.ferrox-save { border-color:var(--accent-ferrox); color:#e87070; }
 .save-btn.acad-save { border-color:var(--accent-acad); color:#70a0e8; }
 
@@ -132,6 +132,7 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 <div id="status-bar"></div>
 
 <script>
+// --- DONNÉES ---
 const MATIERES = [
   {id:'sortileges',icon:'⚡',label:'Sortilèges',meta:"Gestes et paroles"},
   {id:'potions',icon:'⚗️',label:'Potions',meta:"Alchimie et formules"},
@@ -141,11 +142,11 @@ const MATIERES = [
   {id:'dcfo',icon:'🛡️',label:'DCFO',meta:"Défense obscure"},
   {id:'histoire',icon:'📖',label:'Histoire',meta:"Chroniques magiques"},
   {id:'vol',icon:'🧹',label:'Vol',meta:"Maîtrise des balais"},
-  {id:'creatures',icon:'🐉',label:'Créatures',meta:"Classifications"},
-  {id:'divination',icon:'🔮',label:'Divination',meta:"Prédire l'avenir"}
+  {id:'creatures',icon:'🐉',label:'Créatures',meta:"Soins et classes"},
+  {id:'divination',icon:'🔮',label:'Divination',meta:"Lire l'avenir"}
 ];
 const FERROX_COURSES = [
-  {id:'ferrox-hist',icon:'📜',label:'Histoire Ferrox',meta:"Origines"},
+  {id:'ferrox-histoire',icon:'📜',label:'Histoire Ferrox',meta:"Origines"},
   {id:'ferrox-rituels',icon:'🩸',label:'Rituels & Sang',meta:"Cérémonies"},
   {id:'ferrox-armes',icon:'⚔️',label:'Armes & Combat',meta:"Techniques"},
   {id:'ferrox-alchimie',icon:'🔥',label:'Alchimie Sombre',meta:"Transmutations"},
@@ -166,9 +167,9 @@ const ACADEMIE_COURSES = [
 ];
 
 let sb = null;
-const imageStore = {};
 let saveTimers = {};
 
+// --- SUPABASE ---
 async function connectSupabase() {
   const url = document.getElementById('input-url').value.trim();
   const key = document.getElementById('input-key').value.trim();
@@ -179,7 +180,7 @@ async function connectSupabase() {
     localStorage.setItem('sb_url', url); localStorage.setItem('sb_key', key);
     document.getElementById('setup-overlay').classList.add('hidden');
     setSyncDot('ok'); await loadAllData();
-  } catch(e) { alert("Accès refusé."); }
+  } catch(e) { alert("Accès au grimoire refusé. Vérifiez vos clés."); }
 }
 
 async function initSupabase() {
@@ -202,34 +203,46 @@ async function loadAllData() {
   setSyncDot('ok');
 }
 
+// --- LOGIQUE DE SAUVEGARDE FIGÉE ---
 async function saveCourse(id) {
   const ta = document.getElementById('editor-'+id);
   const prev = document.getElementById('preview-'+id);
   if (!ta || !sb) return;
   
   setSyncDot('syncing');
-  const {error} = await sb.from('notes').upsert({id, content: ta.value, updated_at: new Date().toISOString()});
+  const contentToSave = ta.value;
+  
+  const {error} = await sb.from('notes').upsert({id, content: contentToSave, updated_at: new Date().toISOString()});
   
   if (!error) {
     setSyncDot('ok');
-    // Effet visuel "figé"
+    // Mise à jour forcée de la zone de lecture avec effet visuel
+    updatePreview(id);
     if(prev) {
         prev.classList.add('save-flash');
         setTimeout(() => prev.classList.remove('save-flash'), 600);
     }
-    toast('Savoir gravé dans le grimoire ✓');
+    toast('Savoir gravé avec succès ✓');
+  } else {
+    setSyncDot('err');
+    alert("Erreur de sauvegarde : " + error.message);
   }
 }
 
 function updatePreview(id) {
   const ta = document.getElementById('editor-'+id), prev = document.getElementById('preview-'+id);
   if(!ta || !prev) return;
-  let html = ta.value
+  
+  // Conversion simple Markdown-like
+  let text = ta.value;
+  let html = text
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") // Sécurité XSS
     .replace(/^# (.*$)/gim, '<span class="preview-h1">$1</span>')
     .replace(/^## (.*$)/gim, '<span class="preview-h2">$1</span>')
     .replace(/^• (.*$)/gim, '<div><span class="preview-bullet">●</span> $1</div>')
     .replace(/^— (.*$)/gim, '<div><span class="preview-bullet">❧</span> $1</div>');
-  prev.innerHTML = html || '<p style="font-style:italic;opacity:0.3">Parchemin vierge...</p>';
+    
+  prev.innerHTML = html || '<p style="font-style:italic;opacity:0.3">En attente de rédaction...</p>';
 }
 
 function buildPanel(c, rub) {
@@ -247,13 +260,13 @@ function buildPanel(c, rub) {
         <button class="toolbar-btn" onclick="ins('${c.id}','## ')">Sous-titre</button>
         <button class="toolbar-btn" onclick="ins('${c.id}','• ')">Liste</button>
       </div>
-      <textarea class="course-editor" id="editor-${c.id}" oninput="updatePreview('${c.id}'); clearTimeout(saveTimers['${c.id}']); saveTimers['${c.id}']=setTimeout(()=>saveCourse('${c.id}'),4000)"></textarea>
-      <div class="save-row"><button class="save-btn${savCls}" onclick="saveCourse('${c.id}')">✦ Sauvegarder</button></div>
-      <div class="preview-title">📜 Lecture du Savoir</div>
+      <textarea class="course-editor" id="editor-${c.id}" placeholder="Inscrivez votre savoir ici..." oninput="updatePreview('${c.id}'); clearTimeout(saveTimers['${c.id}']); saveTimers['${c.id}']=setTimeout(()=>saveCourse('${c.id}'),4000)"></textarea>
+      <div class="save-row"><button class="save-btn${savCls}" onclick="saveCourse('${c.id}')">✦ Sauvegarder le texte</button></div>
+      <div class="preview-title">📜 Lecture du Grimoire (Version enregistrée)</div>
       <div class="course-preview" id="preview-${c.id}"></div>
     </div>
     <div id="tab-${c.id}-images" class="tab-content">
-      <div class="image-upload-zone">Indisponible en mode lecture</div>
+      <div class="image-upload-zone">La gestion des images nécessite d'être connecté à Supabase</div>
     </div>
   </div>`;
 }
