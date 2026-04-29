@@ -7,27 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* --- DESIGN --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
   --gold: #c9a84c; --gold-light: #e8c97a; --gold-dark: #8a6a1f;
   --parchment: #f0e6cc; --muted: #7a6a4f; --deep: #0a0804;
-  --accent-ferrox: #7a1f1f; --accent-acad: #1f3d7a;
 }
 body { background:#0a0804; font-family:'IM Fell English',serif; color:var(--parchment); min-height:100vh; overflow-x:hidden; }
 .bg-ambiance { position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(ellipse at 15% 40%,rgba(122,31,31,.07) 0%,transparent 55%), radial-gradient(ellipse at 85% 40%,rgba(31,61,122,.07) 0%,transparent 55%); }
 
-/* SETUP */
-#setup-overlay { position:fixed; inset:0; z-index:9999; background:rgba(5,4,2,.98); display:flex; align-items:center; justify-content:center; }
-#setup-overlay.hidden { display:none; }
-.setup-box { background:rgba(15,12,6,.9); border:1px solid var(--gold); border-radius:6px; padding:2.5rem; max-width:520px; width:90%; text-align:center; }
-.setup-input { width:100%; background:rgba(8,6,2,.8); border:1px solid var(--gold-dark); border-radius:3px; color:var(--parchment); padding:.8rem; margin-bottom:1rem; outline:none; font-family: monospace; font-size: 0.8rem; }
-.setup-btn { width:100%; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); color:#000; font-family:'Cinzel Decorative'; font-weight:bold; padding:1rem; cursor:pointer; border:none; text-transform:uppercase; border-radius:4px; }
-
-/* NAVIGATION */
 header { text-align:center; padding:1.5rem; border-bottom:1px solid rgba(201,168,76,.2); }
 .school-name { font-family:'Cinzel Decorative',cursive; font-size:1.8rem; color:var(--gold-light); }
-.rubrique-bar { display:flex; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); padding:0 1rem; overflow-x: auto; }
+.rubrique-bar { display:flex; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); overflow-x: auto; }
 .rubrique-tab { padding:1rem; font-family:'Cinzel Decorative'; font-size:.6rem; color:var(--muted); cursor:pointer; text-transform:uppercase; white-space: nowrap; border-bottom: 2px solid transparent; }
 .rubrique-tab.active-matieres { color:var(--gold-light); border-bottom-color: var(--gold); }
 .rubrique-tab.active-ferrox { color:#e87070; border-bottom-color: #7a1f1f; }
@@ -35,53 +25,37 @@ header { text-align:center; padding:1.5rem; border-bottom:1px solid rgba(201,168
 
 .main-layout { display:flex; flex:1; width:100%; }
 nav { width:220px; padding:1rem 0; border-right:1px solid rgba(201,168,76,.12); height:calc(100vh - 140px); overflow-y:auto; }
-.nav-item { padding:.7rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--muted); border-left:3px solid transparent; transition: 0.2s; }
+.nav-item { padding:.7rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--muted); border-left:3px solid transparent; }
 .nav-item.active { color:var(--gold-light); background:rgba(201,168,76,0.1); border-left-color:var(--gold); }
 
-/* CONTENT AREA */
 .content-area { flex:1; padding:1.5rem 2rem; overflow-y: auto; height:calc(100vh - 140px); }
 .course-panel { display:none; }
 .course-panel.active { display:block; }
 
-/* PAGES SYSTEM */
 .page-manager { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
 .page-tab { padding: 4px 10px; background: rgba(201, 168, 76, 0.05); border: 1px solid rgba(201, 168, 76, 0.2); color: var(--muted); cursor: pointer; font-size: 0.7rem; border-radius: 2px; }
 .page-tab.active { background: rgba(201, 168, 76, 0.2); color: var(--gold-light); border-color: var(--gold); }
-.add-page-btn { padding: 4px 8px; background: none; border: 1px dashed var(--gold); color: var(--gold); cursor: pointer; font-size: 0.7rem; }
 
-/* EDITOR & PREVIEW */
 .course-editor { width:100%; min-height:220px; background:rgba(10,8,4,0.8); border:1px solid rgba(201,168,76,0.3); padding:1rem; color:var(--parchment); font-family:inherit; font-size:1rem; outline:none; resize:vertical; }
-.course-preview { background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 4px; min-height: 80px; white-space: pre-wrap; color:#e0d5ba; border: 1px solid rgba(201,168,76,0.1); margin-top: 1rem; }
+.course-preview { background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 4px; min-height: 80px; white-space: pre-wrap; color:#e0d5ba; border: 1px solid rgba(201, 168, 76, 0.1); margin-top: 1rem; }
 .preview-h1 { color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.3rem; margin: 1rem 0; display: block; border-bottom: 1px solid rgba(201,168,76,0.2); }
 
-/* IMAGES & DND */
 .image-upload-zone { border: 2px dashed rgba(201, 168, 76, 0.2); padding: 1.5rem; text-align: center; cursor: pointer; color: var(--gold-light); margin-top: 2rem; font-size: 0.8rem; transition: 0.3s; }
-.image-upload-zone.dragover { background: rgba(201, 168, 76, 0.1); border-color: var(--gold); }
+.image-upload-zone.dragover { background: rgba(201, 168, 76, 0.2); border-color: var(--gold); border-style: solid; }
 .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 1rem; }
 .img-wrap { position: relative; border: 1px solid rgba(201, 168, 76, 0.2); aspect-ratio: 4/3; }
 .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .img-del { position: absolute; top: 2px; right: 2px; background: #7a1f1f; color: white; border: none; padding: 2px 5px; cursor: pointer; font-size: 9px; }
 
-.save-btn { background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 0.8rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; text-transform: uppercase; border-radius: 2px; }
+.save-btn { background: linear-gradient(to bottom, var(--gold), var(--gold-dark)); color: #000; border: none; padding: 0.8rem; font-family: 'Cinzel Decorative'; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; text-transform: uppercase; }
 
 #sync-dot { position:fixed; top:1rem; right:1rem; width:10px; height:10px; border-radius:50%; background:#7a1f1f; z-index: 10000; }
 #sync-dot.ok { background:#50c878; box-shadow: 0 0 10px #50c878; }
-#status-bar { position:fixed; bottom:1rem; right:1rem; z-index: 500; }
-.toast { background:rgba(10,8,4,0.9); border:1px solid var(--gold); padding:0.5rem 1rem; color:var(--gold-light); font-size:0.8rem; margin-top:0.4rem; }
 </style>
 </head>
 <body>
 <div class="bg-ambiance"></div>
 <div id="sync-dot"></div>
-
-<div id="setup-overlay">
-  <div class="setup-box">
-    <div class="setup-title">⚙ Configuration Grimoire</div>
-    <input class="setup-input" id="input-url" placeholder="URL Supabase">
-    <input class="setup-input" id="input-key" placeholder="Clé Anon Public">
-    <button class="setup-btn" onclick="connectSupabase()">✦ Lancer le Grimoire</button>
-  </div>
-</div>
 
 <div class="site-wrapper">
   <header><div class="school-name">École des Arts Arcanes</div></header>
@@ -97,10 +71,11 @@ nav { width:220px; padding:1rem 0; border-right:1px solid rgba(201,168,76,.12); 
   <div id="rubrique-academie" class="rubrique-panel"><div class="main-layout"><nav id="nav-academie"></nav><div class="content-area" id="content-academie"></div></div></div>
 </div>
 
-<div id="status-bar"></div>
-
 <script>
-// --- DONNÉES ---
+// --- CONFIGURATION DIRECTE ---
+const SB_URL = "https://eoglrxmqyrfxilnxbewx.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2xyeG1xeXJmeGlsbnhiZXd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MjQxMDgsImV4cCI6MjA5MzAwMDEwOH0.PLxoyreQnp2_phV_y9lCx4RE_Tc4X0CrLyudR-VFXJI";
+
 const MATIERES = [{id:'sort',label:'⚡ Sortilèges'}, {id:'pot',label:'⚗️ Potions'}, {id:'bot',label:'🌿 Botanique'}, {id:'disc',label:'📜 Discipline'}, {id:'culi',label:'🍵 Survie'}, {id:'dcfo',label:'🛡️ DCFO'}, {id:'hist',label:'📖 Histoire'}, {id:'vol',label:'🧹 Vol'}, {id:'crea',label:'🐉 Créatures'}, {id:'divi',label:'🔮 Divination'}];
 const FERROX = [{id:'f_h',label:'📜 Histoire'}, {id:'f_r',label:'🩸 Rituels'}, {id:'f_a',label:'⚔️ Armes'}, {id:'f_al',label:'🔥 Alchimie'}, {id:'f_c',label:'🦅 Codes'}, {id:'f_m',label:'🩻 Hiérarchie'}, {id:'f_ca',label:'🗺️ Cartographie'}, {id:'f_d',label:'📁 Divers'}];
 const ACAD = [{id:'a_r',label:'📋 Règles'}, {id:'a_c',label:'🎓 Programmes'}, {id:'a_e',label:'✏️ Examens'}, {id:'a_p',label:'👤 Profs'}, {id:'a_ev',label:'🌟 Events'}, {id:'a_ca',label:'🗺️ Cartographie'}, {id:'a_ar',label:'🗄️ Archives'}, {id:'a_d',label:'📁 Divers'}];
@@ -110,23 +85,19 @@ let allCourseData = {};
 let currentPages = {};
 const imageStore = {};
 
-// --- CONNEXION ---
-async function connectSupabase() {
-  const url = document.getElementById('input-url').value.trim();
-  const key = document.getElementById('input-key').value.trim();
-  if(!url || !key) return;
+// --- INITIALISATION ---
+async function init() {
   try {
-    sb = supabase.createClient(url, key);
-    const {error} = await sb.from('notes').select('id').limit(1);
+    sb = supabase.createClient(SB_URL, SB_KEY);
+    const { error } = await sb.from('notes').select('id').limit(1);
     if (error) throw error;
-    localStorage.setItem('sb_url', url); localStorage.setItem('sb_key', key);
-    document.getElementById('setup-overlay').classList.add('hidden');
     document.getElementById('sync-dot').classList.add('ok');
     await loadData();
-  } catch(e) { alert("Erreur: Vérifiez l'URL, la clé et si les tables existent."); }
+  } catch(e) {
+    alert("Erreur de connexion Supabase (401 ou 404). Vérifie tes RLS et tes tables !\n" + e.message);
+  }
 }
 
-// --- CHARGEMENT ---
 async function loadData() {
   const {data: notes} = await sb.from('notes').select('*');
   const {data: imgs} = await sb.from('images').select('*');
@@ -149,7 +120,7 @@ async function loadData() {
   });
 }
 
-// --- PAGES ---
+// --- LOGIQUE PAGES ---
 function renderPageSystem(courseId) {
   const pages = allCourseData[courseId] || [{id: courseId + '_p1', content: ''}];
   if(!currentPages[courseId]) currentPages[courseId] = pages[0].id;
@@ -159,7 +130,7 @@ function renderPageSystem(courseId) {
     <div class="page-tab ${currentPages[courseId] === p.id ? 'active' : ''}" onclick="switchPage('${courseId}', '${p.id}')">
       P. ${i + 1} ${i > 0 ? `<span onclick="deletePage(event, '${courseId}', '${p.id}')" style="margin-left:5px;color:#ff4d4d">×</span>` : ''}
     </div>
-  `).join('') + `<button class="add-page-btn" onclick="addNewPage('${courseId}')">+ Page</button>`;
+  `).join('') + `<button onclick="addNewPage('${courseId}')" style="font-size:0.7rem;background:none;border:1px dashed var(--gold);color:var(--gold);cursor:pointer;padding:2px 5px;margin-left:5px">+ Page</button>`;
 
   const activePage = pages.find(p => p.id === currentPages[courseId]) || pages[0];
   document.getElementById('editor-' + courseId).value = activePage.content;
@@ -180,24 +151,25 @@ function switchPage(courseId, pageId) {
 
 async function deletePage(e, courseId, pageId) {
   e.stopPropagation();
-  if(!confirm("Supprimer ?")) return;
+  if(!confirm("Supprimer cette page définitivement ?")) return;
   await sb.from('notes').delete().eq('id', pageId);
   allCourseData[courseId] = allCourseData[courseId].filter(p => p.id !== pageId);
   currentPages[courseId] = allCourseData[courseId][0].id;
   renderPageSystem(courseId);
 }
 
-// --- SAVE ---
+// --- SAUVEGARDE ---
 async function saveCourse(courseId) {
   const pageId = currentPages[courseId];
   const content = document.getElementById('editor-' + courseId).value;
-  const {error} = await sb.from('notes').upsert({id: pageId, content: content});
+  const { error } = await sb.from('notes').upsert({id: pageId, content: content});
   if(!error) {
-    const p = allCourseData[courseId].find(x => x.id === pageId);
-    if(p) p.content = content;
+    allCourseData[courseId].find(x => x.id === pageId).content = content;
     updatePreview(courseId);
-    toast("Page sauvegardée !");
-  } else { alert("Erreur Supabase: " + error.message); }
+    alert("Grimoire mis à jour !");
+  } else {
+    alert("Erreur de sauvegarde : " + error.message);
+  }
 }
 
 function updatePreview(id) {
@@ -207,12 +179,13 @@ function updatePreview(id) {
     .replace(/^• (.*$)/gim, '<div>• $1</div>');
 }
 
-// --- IMAGES & DRAG/DROP ---
+// --- IMAGES & DRAG AND DROP ---
 async function uploadImage(courseId, file) {
+  if(!file.type.startsWith('image/')) return;
   const reader = new FileReader();
   reader.onload = async (e) => {
     const b64 = e.target.result;
-    const {data, error} = await sb.from('images').insert({course_id: courseId, src: b64}).select().single();
+    const { data, error } = await sb.from('images').insert({ course_id: courseId, src: b64 }).select().single();
     if(!error) {
       if(!imageStore[courseId]) imageStore[courseId] = [];
       imageStore[courseId].push({id: data.id, src: b64});
@@ -225,7 +198,8 @@ async function uploadImage(courseId, file) {
 function handleDrop(e, id) {
   e.preventDefault();
   document.getElementById('dz-' + id).classList.remove('dragover');
-  for(let f of e.dataTransfer.files) uploadImage(id, f);
+  const files = e.dataTransfer.files;
+  for(let f of files) uploadImage(id, f);
 }
 
 function renderGrid(id) {
@@ -243,17 +217,21 @@ async function delImg(courseId, i) {
   renderGrid(courseId);
 }
 
-// --- UI ---
+// --- INTERFACE ---
 function buildPanel(c) {
   return `
   <div id="panel-${c.id}" class="course-panel">
     <h2 style="font-family:Cinzel Decorative; color:var(--gold-light); margin-bottom:1rem; font-size:1.2rem">${c.label}</h2>
     <div class="page-manager" id="pages-${c.id}"></div>
-    <textarea class="course-editor" id="editor-${c.id}" oninput="updatePreview('${c.id}')" placeholder="Rédigez ici..."></textarea>
-    <button class="save-btn" onclick="saveCourse('${c.id}')">✦ Sauvegarder la page</button>
+    <textarea class="course-editor" id="editor-${c.id}" oninput="updatePreview('${c.id}')" placeholder="Écrivez ici..."></textarea>
+    <button class="save-btn" onclick="saveCourse('${c.id}')">✦ Consigner par écrit</button>
     <div class="course-preview" id="prev-${c.id}"></div>
-    <div class="image-upload-zone" id="dz-${c.id}" ondragover="event.preventDefault(); this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event, '${c.id}')" onclick="document.getElementById('f-${c.id}').click()">
-      Glissez vos images ici ou cliquez
+    <div class="image-upload-zone" id="dz-${c.id}" 
+         ondragover="event.preventDefault(); this.classList.add('dragover')" 
+         ondragleave="this.classList.remove('dragover')" 
+         ondrop="handleDrop(event, '${c.id}')" 
+         onclick="document.getElementById('f-${c.id}').click()">
+      Déposez vos parchemins (images) ici
     </div>
     <input type="file" id="f-${c.id}" hidden multiple onchange="for(let f of this.files) uploadImage('${c.id}', f)">
     <div class="image-grid" id="grid-${c.id}"></div>
@@ -285,19 +263,8 @@ function switchRubrique(n) {
   document.getElementById('tab-' + n).classList.add('active-' + n);
 }
 
-function toast(m) {
-  const b = document.getElementById('status-bar');
-  const e = document.createElement('div'); e.className = 'toast'; e.textContent = m;
-  b.appendChild(e); setTimeout(()=>e.remove(), 2500);
-}
-
 buildAll();
-const savedU = localStorage.getItem('sb_url'), savedK = localStorage.getItem('sb_key');
-if(savedU) {
-  document.getElementById('input-url').value = savedU;
-  document.getElementById('input-key').value = savedK;
-  connectSupabase();
-}
+init();
 </script>
 </body>
 </html>
