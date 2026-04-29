@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>École des Arts Arcanes — Grimoire RP</title>
+<title>École des Arts Arcanes — GTA RP</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* --- BASE & THEME --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
   --gold: #c9a84c; --gold-light: #e8c97a; --gold-dark: #8a6a1f;
@@ -22,54 +21,55 @@ body { background:#0a0804; font-family:'IM Fell English',serif; color:var(--parc
               radial-gradient(ellipse at 50% 100%,rgba(201,168,76,.05) 0%,transparent 50%); }
 .site-wrapper { position:relative; z-index:1; display:flex; flex-direction:column; min-height:100vh; }
 
-/* --- SETUP & STATUS --- */
+/* SETUP OVERLAY */
 #setup-overlay { position:fixed; inset:0; z-index:9999; background:rgba(5,4,2,.97); display:flex; align-items:center; justify-content:center; }
 #setup-overlay.hidden { display:none; }
 .setup-box { background:rgba(15,12,6,.9); border:1px solid rgba(201,168,76,.3); border-radius:6px; padding:2.5rem; max-width:520px; width:90%; text-align:center; }
 .setup-title { font-family:'Cinzel Decorative',cursive; font-size:1.1rem; color:var(--gold-light); margin-bottom:.6rem; }
-.setup-input { width:100%; background:rgba(8,6,2,.8); border:1px solid rgba(201,168,76,.2); border-radius:3px; color:var(--parchment); padding:.6rem .9rem; margin-bottom: 1rem; outline:none; }
-.setup-btn { width:100%; background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05)); border:1px solid rgba(201,168,76,.4); color:var(--gold-light); font-family:'Cinzel Decorative'; padding:.75rem; cursor:pointer; text-transform:uppercase; }
+.setup-input { width:100%; background:rgba(8,6,2,.8); border:1px solid rgba(201,168,76,.2); border-radius:3px; color:var(--parchment); font-family:'IM Fell English'; padding:.6rem .9rem; margin-bottom:1rem; outline:none; }
+.setup-btn { width:100%; background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05)); border:1px solid rgba(201,168,76,.4); color:var(--gold-light); font-family:'Cinzel Decorative'; padding:.75rem; cursor:pointer; border-radius:3px; text-transform:uppercase; transition:0.2s; }
+.setup-btn:hover { background:rgba(201,168,76,.25); }
 
-#sync-dot { position:fixed; top:1rem; right:1rem; z-index:500; width:8px; height:8px; border-radius:50%; background:var(--gold-dark); transition: .3s; }
+/* STATUS & SYNC */
+#sync-dot { position:fixed; top:1rem; right:1rem; z-index:500; width:8px; height:8px; border-radius:50%; background:var(--gold-dark); transition:0.3s; }
 #sync-dot.syncing { background:#e8c97a; animation:pulse .8s infinite; }
 #sync-dot.ok { background:#50c878; }
 #sync-dot.err { background:#e87070; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-#status-bar { position:fixed; bottom:1rem; right:1rem; z-index:500; display:flex; flex-direction:column; gap:.4rem; }
-.status-toast { background:rgba(10,8,3,.92); border:1px solid rgba(201,168,76,.25); border-radius:4px; padding:.5rem 1rem; font-size:.82rem; color:var(--parchment); opacity:0; transform:translateY(8px); transition:all .3s; }
+#status-bar { position:fixed; bottom:1rem; right:1rem; z-index:500; display:flex; flex-direction:column; gap:.4rem; pointer-events:none; }
+.status-toast { background:rgba(10,8,3,.92); border:1px solid rgba(201,168,76,.25); border-radius:4px; padding:.5rem 1rem; font-size:.82rem; color:var(--parchment); opacity:0; transform:translateY(8px); transition:all 0.3s; }
 .status-toast.show { opacity:1; transform:translateY(0); }
-.status-toast.success { border-color:#50c878; color:#90e890; }
+.status-toast.success { border-color:rgba(100,200,100,.3); color:#90e890; }
 
-/* --- HEADER & NAVIGATION --- */
+/* HEADER */
 header { text-align:center; padding:2.2rem 2rem 1.5rem; border-bottom:1px solid rgba(201,168,76,.2); }
+.header-ornament { font-size:22px; color:var(--gold); letter-spacing:18px; margin-bottom:.4rem; display:block; opacity:.6; }
 .school-name { font-family:'Cinzel Decorative',cursive; font-size:clamp(1.3rem,3.5vw,2.5rem); color:var(--gold-light); text-shadow:0 0 40px rgba(201,168,76,.35); }
+.header-rule { display:flex; align-items:center; gap:1rem; margin:1rem auto 0; max-width:380px; }
+.header-rule::before,.header-rule::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+
+/* RUBRIQUE BAR */
 .rubrique-bar { display:flex; align-items:center; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); padding:0 2rem; overflow-x:auto; }
-.rubrique-tab { padding:.9rem 1.8rem; font-family:'Cinzel Decorative'; font-size:.62rem; color:var(--muted); cursor:pointer; transition: .2s; border-bottom: 2px solid transparent; text-transform:uppercase; white-space: nowrap; }
+.rubrique-tab { padding:.9rem 1.8rem; font-family:'Cinzel Decorative'; font-size:.62rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; text-transform:uppercase; }
 .rubrique-tab.active-matieres { color:var(--gold-light); border-bottom-color:var(--gold); }
 .rubrique-tab.active-ferrox { color:#e87070; border-bottom-color:var(--accent-ferrox-light); }
 .rubrique-tab.active-academie { color:#70a0e8; border-bottom-color:var(--accent-acad-light); }
 .rubrique-sep { width:1px; height:20px; background:rgba(201,168,76,.15); margin:0 .5rem; }
 
-/* --- LAYOUT --- */
-.rubrique-panel { display:none; flex:1; }
-.rubrique-panel.active { display:flex; }
+/* LAYOUT & NAV */
+.rubrique-panel { display:none; }
+.rubrique-panel.active { display:flex; flex:1; }
 .main-layout { display:flex; flex:1; max-width:1300px; margin:0 auto; width:100%; }
 nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgba(201,168,76,.12); position:sticky; top:0; height:calc(100vh - 158px); overflow-y:auto; }
 .nav-item { display:flex; align-items:center; gap:.7rem; padding:.65rem 1.2rem; cursor:pointer; transition:all .18s; border-left:3px solid transparent; font-size:.88rem; color:var(--muted); }
-.nav-item:hover { color:var(--gold-light); background:rgba(201,168,76,.05); }
-
-/* --- ACTIVE STATES PAR RUBRIQUE --- */
 .nav-item.active { color:var(--gold-light); background:rgba(201,168,76,.08); border-left-color:var(--gold); }
-.nav-item.active-ferrox-item { color:#e87070 !important; background:rgba(122,31,31,.1) !important; border-left-color:var(--accent-ferrox-light) !important; }
-.nav-item.active-acad-item { color:#70a0e8 !important; background:rgba(31,61,122,.1) !important; border-left-color:var(--accent-acad-light) !important; }
+.nav-item.active-ferrox-item { color:#e87070; background:rgba(122,31,31,.1); border-left-color:var(--accent-ferrox-light); }
+.nav-item.active-acad-item { color:#70a0e8; background:rgba(31,61,122,.1); border-left-color:var(--accent-acad-light); }
 
-/* --- EDITOR & PREVIEW --- */
+/* CONTENT & EDITOR */
 .content-area { flex:1; padding:2rem 2.5rem; }
 .course-panel { display:none; animation:fadeIn .3s ease; }
 .course-panel.active { display:block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-
 .section-tabs { display:flex; margin-bottom:1.2rem; border-bottom:1px solid rgba(201,168,76,.15); }
 .section-tab { padding:.55rem 1.2rem; font-family:'Cinzel Decorative'; font-size:.55rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; }
 .section-tab.active { color:var(--gold-light); border-bottom-color:var(--gold); }
@@ -78,17 +78,24 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 
 .editor-toolbar { display:flex; gap:3px; background:rgba(201,168,76,.04); border:1px solid rgba(201,168,76,.13); padding:5px; border-radius:3px 3px 0 0; }
 .course-editor { width:100%; min-height:300px; background:rgba(8,6,2,.7); border:1px solid rgba(201,168,76,.18); padding:1.1rem; color:var(--parchment); font-family:'IM Fell English'; font-size:.97rem; line-height:1.85; resize:vertical; outline:none; }
-.toolbar-btn { background:none; border:none; color:var(--muted); cursor:pointer; padding:3px 7px; font-size:11px; }
+.toolbar-btn { background:none; border:1px solid transparent; color:var(--muted); cursor:pointer; padding:3px 7px; font-size:11px; }
 
-/* --- PREVIEW AREA --- */
-.preview-title { margin-top: 2.5rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); letter-spacing: 0.2em; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+/* PREVIEW SYSTEM */
+.preview-title { margin-top: 3rem; font-family: 'Cinzel Decorative'; font-size: 0.7rem; color: var(--gold); letter-spacing: 0.2em; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem; }
 .course-preview { background: rgba(240, 230, 204, 0.02); border: 1px solid rgba(201, 168, 76, 0.08); padding: 2.5rem; border-radius: 4px; line-height: 1.9; color: #e0d5ba; white-space: pre-wrap; font-size: 1.05rem; margin-bottom: 4rem; }
 .preview-h1 { color: var(--gold-light); font-family: 'Cinzel Decorative'; font-size: 1.6rem; margin: 1rem 0; display: block; border-bottom: 1px solid rgba(201,168,76,0.15); }
 .preview-h2 { color: var(--gold); font-family: 'Cinzel Decorative'; font-size: 1.2rem; margin: 1rem 0; display: block; }
 .preview-bullet { color: var(--gold); margin-right: 10px; font-weight: bold; }
 
-/* --- IMAGES GRID --- */
-.image-upload-zone { border:1.5px dashed rgba(201,168,76,.25); padding:2rem; text-align:center; cursor:pointer; margin-bottom:1.5rem; color: var(--muted); font-size: 0.9rem; }
+/* SAVE BUTTON */
+.save-row { display:flex; align-items:center; justify-content:space-between; margin-top:1rem; }
+.save-btn { background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04)); border:1px solid rgba(201,168,76,.35); color:var(--gold-light); font-family:'Cinzel Decorative'; font-size:.58rem; padding:.6rem 1.5rem; cursor:pointer; transition:0.2s; }
+.save-btn:hover { background:rgba(201,168,76,0.2); }
+.save-btn.ferrox-save { border-color:rgba(196,48,48,.35); color:#e87070; }
+.save-btn.acad-save { border-color:rgba(74,123,196,.35); color:#70a0e8; }
+
+/* IMAGES */
+.image-upload-zone { border:1.5px dashed rgba(201,168,76,.25); padding:2rem; text-align:center; cursor:pointer; margin-bottom:1.5rem; color:var(--muted); font-size:0.9rem; }
 .image-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:15px; }
 .image-card { position:relative; border-radius:4px; overflow:hidden; border:1px solid rgba(201,168,76,.15); background:rgba(8,6,2,.5); aspect-ratio:4/3; }
 .image-card img { width:100%; height:100%; object-fit:cover; cursor:pointer; }
@@ -107,16 +114,18 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 <div id="setup-overlay">
   <div class="setup-box">
     <div class="setup-title">⚙ Configuration Supabase</div>
-    <input class="setup-input" id="input-url" placeholder="URL Supabase">
-    <input class="setup-input" id="input-key" placeholder="Clé Anon Public">
+    <input class="setup-input" id="input-url" placeholder="URL du projet">
+    <input class="setup-input" id="input-key" placeholder="Clé anon public">
     <button class="setup-btn" onclick="connectSupabase()">✦ Ouvrir le Grimoire</button>
+    <div id="setup-error" style="color:#e87070; margin-top:10px; font-size:0.8rem;"></div>
   </div>
 </div>
 
 <div class="site-wrapper">
   <header>
+    <span class="header-ornament">✦ ✦ ✦</span>
     <div class="school-name">École des Arts Arcanes</div>
-    <div style="font-style:italic; color:var(--muted); margin-top:5px;">Registre de Pédagogie Arcanique — GTA RP</div>
+    <div class="header-rule"></div>
   </header>
 
   <div class="rubrique-bar">
@@ -128,24 +137,13 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
   </div>
 
   <div id="rubrique-matieres" class="rubrique-panel active">
-    <div class="main-layout">
-      <nav id="nav-matieres"><div style="font-size:0.55rem; letter-spacing:0.2em; padding:1.2rem; color:var(--muted);">MATIÈRES</div></nav>
-      <div class="content-area" id="content-matieres"></div>
-    </div>
+    <div class="main-layout"><nav id="nav-matieres"></nav><div class="content-area" id="content-matieres"></div></div>
   </div>
-
   <div id="rubrique-ferrox" class="rubrique-panel">
-    <div class="main-layout">
-      <nav id="nav-ferrox" style="border-right-color:rgba(196,48,48,0.15)"><div style="font-size:0.55rem; letter-spacing:0.2em; padding:1.2rem; color:var(--accent-ferrox-light);">FERROX</div></nav>
-      <div class="content-area" id="content-ferrox"></div>
-    </div>
+    <div class="main-layout"><nav id="nav-ferrox"></nav><div class="content-area" id="content-ferrox"></div></div>
   </div>
-
   <div id="rubrique-academie" class="rubrique-panel">
-    <div class="main-layout">
-      <nav id="nav-academie" style="border-right-color:rgba(74,123,196,0.15)"><div style="font-size:0.55rem; letter-spacing:0.2em; padding:1.2rem; color:var(--accent-acad-light);">ACADÉMIE</div></nav>
-      <div class="content-area" id="content-academie"></div>
-    </div>
+    <div class="main-layout"><nav id="nav-academie"></nav><div class="content-area" id="content-academie"></div></div>
   </div>
 </div>
 
@@ -153,31 +151,29 @@ nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgb
 <div id="status-bar"></div>
 
 <script>
-// --- CONFIGURATION ---
 const MATIERES = [
   {id:'sortileges',icon:'⚡',label:'Sortilèges',meta:"Gestes et paroles"},
   {id:'potions',icon:'⚗️',label:'Potions',meta:"Alchimie et formules"},
   {id:'botanique',icon:'🌿',label:'Botanique',meta:"Plantes magiques"},
   {id:'discipline',icon:'📜',label:'Discipline',meta:"Vie en communauté"},
-  {id:'dcfo',icon:'🛡️',label:'DCFO',meta:"Défense contre l'obscur"},
+  {id:'dcfo',icon:'🛡️',label:'DCFO',meta:"Défense obscure"},
   {id:'histoire',icon:'📖',label:'Histoire',meta:"Chroniques magiques"},
-  {id:'creatures',icon:'🐉',label:'Créatures',meta:"Soins et classifications"}
+  {id:'creatures',icon:'🐉',label:'Créatures',meta:"Classifications"}
 ];
 const FERROX_COURSES = [
-  {id:'ferrox-histoire',icon:'📜',label:'Histoire Ferrox',meta:"Origines de la maison"},
-  {id:'ferrox-rituels',icon:'🩸',label:'Rituels',meta:"Cérémonies et rites"},
-  {id:'ferrox-loi',icon:'🦅',label:'Codes & Lois',meta:"Loi interne Ferrox"}
+  {id:'ferrox-histoire',icon:'📜',label:'Histoire Ferrox',meta:"Origines"},
+  {id:'ferrox-rituels',icon:'🩸',label:'Rituels',meta:"Cérémonies"},
+  {id:'ferrox-loi',icon:'🦅',label:'Codes & Lois',meta:"Loi interne"}
 ];
 const ACADEMIE_COURSES = [
-  {id:'acad-regles',icon:'📋',label:'Règles',meta:"Statuts de l'Académie"},
-  {id:'acad-prof',icon:'👤',label:'Corps Enseignant',meta:"Fiches professeurs"}
+  {id:'acad-regles',icon:'📋',label:'Règles',meta:"Statuts"},
+  {id:'acad-prof',icon:'👤',label:'Professeurs',meta:"Fiches enseignants"}
 ];
 
 let sb = null;
 const imageStore = {};
 let saveTimers = {};
 
-// --- SUPABASE ---
 async function connectSupabase() {
   const url = document.getElementById('input-url').value.trim();
   const key = document.getElementById('input-key').value.trim();
@@ -188,7 +184,7 @@ async function connectSupabase() {
     localStorage.setItem('sb_url', url); localStorage.setItem('sb_key', key);
     document.getElementById('setup-overlay').classList.add('hidden');
     setSyncDot('ok'); await loadAllData();
-  } catch(e) { alert("Erreur de connexion : " + e.message); }
+  } catch(e) { document.getElementById('setup-error').textContent = "Erreur de connexion."; }
 }
 
 async function initSupabase() {
@@ -213,7 +209,7 @@ async function loadAllData() {
     if(!imageStore[img.course_id]) imageStore[img.course_id] = [];
     imageStore[img.course_id].push({dbid:img.id, src:img.src});
   });
-  [...MATIERES, ...FERROX_COURSES, ...ACADEMIE_COURSES].forEach(c => renderGrid(c.id));
+  [...MATIERES,...FERROX_COURSES,...ACADEMIE_COURSES].forEach(c => renderGrid(c.id));
   setSyncDot('ok');
 }
 
@@ -223,6 +219,7 @@ async function saveCourse(id) {
   setSyncDot('syncing');
   await sb.from('notes').upsert({id, content: ta.value, updated_at: new Date().toISOString()});
   setSyncDot('ok');
+  toast('Sauvegardé ✓', 'success');
 }
 
 function updatePreview(id) {
@@ -234,10 +231,42 @@ function updatePreview(id) {
     .replace(/^## (.*$)/gim, '<span class="preview-h2">$1</span>')
     .replace(/^• (.*$)/gim, '<div><span class="preview-bullet">●</span> $1</div>')
     .replace(/^— (.*$)/gim, '<div><span class="preview-bullet">❧</span> $1</div>');
-  prev.innerHTML = html || '<p style="font-style:italic;opacity:0.3">En attente de texte...</p>';
+  prev.innerHTML = html || '<p style="font-style:italic;opacity:0.4">Le parchemin est vide...</p>';
 }
 
-// --- IMAGES ---
+function buildPanel(c, rub) {
+  const tabCls = rub==='ferrox'?' tab-ferrox':rub==='academie'?' tab-acad':'';
+  const savCls = rub==='ferrox'?' ferrox-save':rub==='academie'?' acad-save':'';
+  return `
+  <div id="panel-${c.id}" class="course-panel">
+    <div style="margin-bottom:1.5rem; border-bottom:1px solid rgba(201,168,76,.15); padding-bottom:1rem;">
+      <h2 class="preview-h1" style="margin:0; border:none;">${c.icon} ${c.label}</h2>
+    </div>
+    <div class="section-tabs">
+      <div class="section-tab${tabCls} active" onclick="switchTab('${c.id}','notes',this)">✒️ Notes</div>
+      <div class="section-tab${tabCls}" onclick="switchTab('${c.id}','images',this)">🖼️ Images</div>
+    </div>
+    <div id="tab-${c.id}-notes" class="tab-content active">
+      <div class="editor-toolbar">
+        <button class="toolbar-btn" onclick="ins('${c.id}','# ')">Titre</button>
+        <button class="toolbar-btn" onclick="ins('${c.id}','## ')">Sous-titre</button>
+        <button class="toolbar-btn" onclick="ins('${c.id}','• ')">Liste</button>
+      </div>
+      <textarea class="course-editor" id="editor-${c.id}" oninput="updatePreview('${c.id}'); clearTimeout(saveTimers['${c.id}']); saveTimers['${c.id}']=setTimeout(()=>saveCourse('${c.id}'),3000)"></textarea>
+      <div class="save-row">
+        <button class="save-btn${savCls}" onclick="saveCourse('${c.id}')">✦ Sauvegarder</button>
+      </div>
+      <div class="preview-title">📜 Lecture du Grimoire</div>
+      <div class="course-preview" id="preview-${c.id}"></div>
+    </div>
+    <div id="tab-${c.id}-images" class="tab-content">
+      <div class="image-upload-zone" onclick="document.getElementById('file-${c.id}').click()">Ajouter des illustrations</div>
+      <input type="file" id="file-${c.id}" hidden multiple onchange="addImages('${c.id}',this)">
+      <div class="image-grid" id="grid-${c.id}"></div>
+    </div>
+  </div>`;
+}
+
 async function addImages(id, input) {
   for (const file of input.files) {
     const reader = new FileReader();
@@ -257,40 +286,27 @@ async function addImages(id, input) {
 function renderGrid(id) {
   const grid = document.getElementById('grid-'+id);
   if (!grid) return;
-  grid.innerHTML = (imageStore[id]||[]).map((img, i) => `
-    <div class="image-card">
-      <img src="${img.src}" onclick="openLightbox('${img.src}')">
-      <div class="image-card-overlay">
-        <button onclick="deleteImage('${id}', ${i})" style="background:#e87070; color:white; border:none; padding:5px 10px; cursor:pointer; font-size:10px;">Supprimer</button>
-      </div>
-    </div>`).join('');
+  grid.innerHTML = (imageStore[id]||[]).map((img, i) => `<div class="image-card"><img src="${img.src}" onclick="openLightbox('${img.src}')"><div class="image-card-overlay"><button onclick="deleteImage('${id}', ${i})" style="background:red; color:white; border:none; padding:5px; cursor:pointer;">Supprimer</button></div></div>`).join('');
 }
 
 async function deleteImage(courseId, idx) {
   const img = imageStore[courseId][idx];
-  const {error} = await sb.from('images').delete().eq('id', img.dbid);
-  if(!error) { imageStore[courseId].splice(idx,1); renderGrid(courseId); }
+  await sb.from('images').delete().eq('id', img.dbid);
+  imageStore[courseId].splice(idx,1); renderGrid(courseId);
 }
 
-// --- NAVIGATION (RUBRIQUES & COURS) ---
 function switchRubrique(name) {
   document.querySelectorAll('.rubrique-tab').forEach(t => t.classList.remove('active-matieres', 'active-ferrox', 'active-academie'));
   document.getElementById('tab-' + name).classList.add('active-' + name);
-
   document.querySelectorAll('.rubrique-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('rubrique-' + name).classList.add('active');
 }
 
 function showCourse(id, el, rubrique) {
-  const nav = el.parentElement;
-  nav.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'active-ferrox-item', 'active-acad-item'));
-
-  const panelContainer = document.getElementById('content-' + rubrique);
-  panelContainer.querySelectorAll('.course-panel').forEach(p => p.classList.remove('active'));
-
+  el.parentElement.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'active-ferrox-item', 'active-acad-item'));
+  document.getElementById('rubrique-'+rubrique).querySelectorAll('.course-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
-  const activeClass = rubrique === 'ferrox' ? 'active-ferrox-item' : (rubrique === 'academie' ? 'active-acad-item' : 'active');
-  el.classList.add(activeClass);
+  el.classList.add(rubrique === 'ferrox' ? 'active-ferrox-item' : (rubrique === 'academie' ? 'active-acad-item' : 'active'));
 }
 
 function switchTab(id, tab, el) {
@@ -301,45 +317,13 @@ function switchTab(id, tab, el) {
   document.getElementById('tab-'+id+'-'+tab).classList.add('active');
 }
 
-// --- UI BUILDER ---
-function buildPanel(c, rub) {
-  const tabCls = rub==='ferrox'?' tab-ferrox':rub==='academie'?' tab-acad':'';
-  return `
-  <div id="panel-${c.id}" class="course-panel">
-    <div style="margin-bottom:1.5rem; border-bottom:1px solid rgba(201,168,76,.1); padding-bottom:1rem;">
-      <h2 style="font-family:'Cinzel Decorative'; color:var(--gold-light); font-size:1.5rem;">${c.icon} ${c.label}</h2>
-      <small style="color:var(--muted); font-style:italic;">${c.meta}</small>
-    </div>
-    <div class="section-tabs">
-      <div class="section-tab${tabCls} active" onclick="switchTab('${c.id}','notes',this)">✒️ Notes</div>
-      <div class="section-tab${tabCls}" onclick="switchTab('${c.id}','images',this)">🖼️ Images</div>
-    </div>
-    <div id="tab-${c.id}-notes" class="tab-content active">
-      <div class="editor-toolbar">
-        <button class="toolbar-btn" onclick="ins('${c.id}','# ')">Titre</button>
-        <button class="toolbar-btn" onclick="ins('${c.id}','## ')">Sous-titre</button>
-        <button class="toolbar-btn" onclick="ins('${c.id}','• ')">Liste</button>
-      </div>
-      <textarea class="course-editor" id="editor-${c.id}" placeholder="Rédigez ici..." oninput="updatePreview('${c.id}'); clearTimeout(saveTimers['${c.id}']); saveTimers['${c.id}']=setTimeout(()=>saveCourse('${c.id}'),2000)"></textarea>
-      
-      <div class="preview-title">📜 Lecture du Grimoire</div>
-      <div class="course-preview" id="preview-${c.id}"></div>
-    </div>
-    <div id="tab-${c.id}-images" class="tab-content">
-      <div class="image-upload-zone" onclick="document.getElementById('file-${c.id}').click()">Ajouter des images</div>
-      <input type="file" id="file-${c.id}" hidden multiple onchange="addImages('${c.id}',this)">
-      <div class="image-grid" id="grid-${c.id}"></div>
-    </div>
-  </div>`;
-}
-
 function buildAll() {
   const configs = [{c:MATIERES, r:'matieres'}, {c:FERROX_COURSES, r:'ferrox'}, {c:ACADEMIE_COURSES, r:'academie'}];
   configs.forEach(conf => {
     const nav = document.getElementById('nav-'+conf.r), cont = document.getElementById('content-'+conf.r);
     conf.c.forEach((c,i) => {
       const activeCls = i===0 ? (conf.r==='ferrox'?'active-ferrox-item':conf.r==='academie'?'active-acad-item':'active') : '';
-      nav.innerHTML += `<div class="nav-item ${activeCls}" onclick="showCourse('${c.id}',this,'${conf.r}')"><span style="width:20px;text-align:center">${c.icon}</span> ${c.label}</div>`;
+      nav.innerHTML += `<div class="nav-item ${activeCls}" onclick="showCourse('${c.id}',this,'${conf.r}')">${c.icon} ${c.label}</div>`;
       cont.innerHTML += buildPanel(c, conf.r);
     });
     if(conf.c[0]) document.getElementById('panel-'+conf.c[0].id).classList.add('active');
@@ -354,6 +338,11 @@ function ins(id, t) {
 }
 
 function setSyncDot(s) { document.getElementById('sync-dot').className = s; }
+function toast(m, t) {
+  const bar = document.getElementById('status-bar');
+  const e = document.createElement('div'); e.className = 'status-toast show '+t; e.textContent = m;
+  bar.appendChild(e); setTimeout(()=>e.remove(), 2500);
+}
 function openLightbox(s) { document.getElementById('lightbox-img').src=s; document.getElementById('lightbox').classList.add('open'); }
 
 buildAll();
