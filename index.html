@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>École des Arts Arcanes — GTA RP</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --gold: #c9a84c; --gold-light: #e8c97a; --gold-dark: #8a6a1f;
+  --parchment: #f0e6cc; --muted: #7a6a4f; --deep: #0a0804;
+  --accent-ferrox: #7a1f1f; --accent-ferrox-light: #c43030;
+  --accent-acad: #1f3d7a; --accent-acad-light: #4a7bc4;
+}
+body { background:#0a0804; font-family:'IM Fell English',serif; color:var(--parchment); min-height:100vh; overflow-x:hidden; }
+.bg-ambiance { position:fixed; inset:0; pointer-events:none; z-index:0;
+  background: radial-gradient(ellipse at 15% 40%,rgba(122,31,31,.07) 0%,transparent 55%),
+              radial-gradient(ellipse at 85% 40%,rgba(31,61,122,.07) 0%,transparent 55%),
+              radial-gradient(ellipse at 50% 100%,rgba(201,168,76,.05) 0%,transparent 50%); }
+.site-wrapper { position:relative; z-index:1; display:flex; flex-direction:column; min-height:100vh; }
+
+/* SETUP OVERLAY */
+#setup-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(5,4,2,.97);
+  display:flex; align-items:center; justify-content:center;
+}
+#setup-overlay.hidden { display:none; }
+.setup-box {
+  background:rgba(15,12,6,.9);
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:6px; padding:2.5rem;
+  max-width:520px; width:90%; text-align:center;
+}
+.setup-title { font-family:'Cinzel Decorative',cursive; font-size:1.1rem; color:var(--gold-light); margin-bottom:.6rem; }
+.setup-sub { font-style:italic; color:var(--muted); font-size:.88rem; margin-bottom:1.8rem; line-height:1.7; }
+.setup-field { margin-bottom:1rem; text-align:left; }
+.setup-label { font-family:'Cinzel Decorative',cursive; font-size:.55rem; letter-spacing:.18em; color:var(--muted); display:block; margin-bottom:.4rem; text-transform:uppercase; }
+.setup-input {
+  width:100%; background:rgba(8,6,2,.8);
+  border:1px solid rgba(201,168,76,.2); border-radius:3px;
+  color:var(--parchment); font-family:'IM Fell English',serif;
+  font-size:.9rem; padding:.6rem .9rem; outline:none;
+}
+.setup-input:focus { border-color:rgba(201,168,76,.45); }
+.setup-btn {
+  margin-top:.5rem; width:100%;
+  background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05));
+  border:1px solid rgba(201,168,76,.4); color:var(--gold-light);
+  font-family:'Cinzel Decorative',cursive; font-size:.6rem; letter-spacing:.15em;
+  padding:.75rem 2rem; cursor:pointer; border-radius:3px; transition:all .2s; text-transform:uppercase;
+}
+.setup-btn:hover { background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.08)); }
+.setup-error { color:#e87070; font-size:.82rem; font-style:italic; margin-top:.8rem; min-height:1.2rem; }
+.setup-steps { text-align:left; margin-bottom:1.5rem; background:rgba(201,168,76,.04); border:1px solid rgba(201,168,76,.1); border-radius:4px; padding:1rem 1.2rem; }
+.setup-steps p { font-size:.82rem; color:var(--muted); line-height:1.8; }
+.setup-steps a { color:var(--gold); text-decoration:none; }
+.setup-steps a:hover { text-decoration:underline; }
+.step-num { color:var(--gold-light); font-weight:bold; }
+
+/* STATUS BAR */
+#status-bar {
+  position:fixed; bottom:1rem; right:1rem; z-index:500;
+  display:flex; flex-direction:column; gap:.4rem; pointer-events:none;
+}
+.status-toast {
+  background:rgba(10,8,3,.92); border:1px solid rgba(201,168,76,.25);
+  border-radius:4px; padding:.5rem 1rem;
+  font-size:.82rem; color:var(--parchment); font-style:italic;
+  opacity:0; transform:translateY(8px);
+  transition:all .3s; pointer-events:none;
+}
+.status-toast.show { opacity:1; transform:translateY(0); }
+.status-toast.success { border-color:rgba(100,200,100,.3); color:#90e890; }
+.status-toast.error { border-color:rgba(196,48,48,.3); color:#e87070; }
+.status-toast.info { border-color:rgba(201,168,76,.3); color:var(--gold-light); }
+
+/* SYNC INDICATOR */
+#sync-dot {
+  position:fixed; top:1rem; right:1rem; z-index:500;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--gold-dark); transition:background .3s;
+}
+#sync-dot.syncing { background:#e8c97a; animation:pulse .8s infinite; }
+#sync-dot.ok { background:#50c878; }
+#sync-dot.err { background:#e87070; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* HEADER */
+header { text-align:center; padding:2.2rem 2rem 1.5rem; border-bottom:1px solid rgba(201,168,76,.2); }
+.header-ornament { font-size:22px; color:var(--gold); letter-spacing:18px; margin-bottom:.4rem; display:block; opacity:.6; }
+.school-name { font-family:'Cinzel Decorative',cursive; font-size:clamp(1.3rem,3.5vw,2.5rem); color:var(--gold-light); text-shadow:0 0 40px rgba(201,168,76,.35),0 2px 4px rgba(0,0,0,.9); letter-spacing:.05em; line-height:1.2; margin-bottom:.3rem; }
+.school-subtitle { font-style:italic; font-size:.9rem; color:var(--muted); letter-spacing:.12em; }
+.header-rule { display:flex; align-items:center; gap:1rem; margin:1rem auto 0; max-width:380px; }
+.header-rule::before,.header-rule::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+.header-rule span { color:var(--gold); font-size:16px; }
+
+/* RUBRIQUE BAR */
+.rubrique-bar { display:flex; align-items:center; gap:0; background:rgba(5,4,2,.8); border-bottom:1px solid rgba(201,168,76,.15); padding:0 2rem; overflow-x:auto; }
+.rubrique-tab { padding:.9rem 1.8rem; font-family:'Cinzel Decorative',cursive; font-size:.62rem; letter-spacing:.18em; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; text-transform:uppercase; }
+.rubrique-tab:hover { color:var(--gold-light); }
+.rubrique-tab.active-matieres { color:var(--gold-light); border-bottom-color:var(--gold); }
+.rubrique-tab.active-ferrox { color:#e87070; border-bottom-color:var(--accent-ferrox-light); }
+.rubrique-tab.active-academie { color:#70a0e8; border-bottom-color:var(--accent-acad-light); }
+.rubrique-sep { width:1px; height:20px; background:rgba(201,168,76,.15); margin:0 .5rem; }
+
+/* RUBRIQUE PANELS */
+.rubrique-panel { display:none; }
+.rubrique-panel.active { display:flex; flex:1; }
+
+/* LAYOUT */
+.main-layout { display:flex; flex:1; max-width:1300px; margin:0 auto; width:100%; }
+
+/* NAV */
+nav { width:250px; min-width:190px; padding:1.5rem 0; border-right:1px solid rgba(201,168,76,.12); position:sticky; top:0; height:calc(100vh - 158px); overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--gold-dark) transparent; }
+nav.ferrox-nav { border-right-color:rgba(196,48,48,.15); }
+nav.academie-nav { border-right-color:rgba(74,123,196,.15); }
+.nav-title { font-family:'Cinzel Decorative',cursive; font-size:.55rem; color:var(--muted); letter-spacing:.22em; text-transform:uppercase; padding:0 1.2rem .8rem; border-bottom:1px solid rgba(201,168,76,.1); margin-bottom:.4rem; }
+.nav-item { display:flex; align-items:center; gap:.7rem; padding:.65rem 1.2rem; cursor:pointer; transition:all .18s; border-left:3px solid transparent; font-size:.88rem; color:var(--muted); }
+.nav-item:hover { color:var(--gold-light); background:rgba(201,168,76,.05); border-left-color:rgba(201,168,76,.25); }
+.nav-item.active { color:var(--gold-light); background:rgba(201,168,76,.08); border-left-color:var(--gold); }
+.nav-item.active-ferrox-item { color:#e87070; background:rgba(122,31,31,.1); border-left-color:var(--accent-ferrox-light); }
+.nav-item.active-acad-item { color:#70a0e8; background:rgba(31,61,122,.1); border-left-color:var(--accent-acad-light); }
+.nav-item .icon { font-size:15px; width:20px; text-align:center; flex-shrink:0; }
+.nav-item .label { font-family:'IM Fell English',serif; font-size:.88rem; line-height:1.3; }
+
+/* CONTENT */
+.content-area { flex:1; padding:2rem 2.5rem; min-height:calc(100vh - 158px); overflow-y:auto; }
+.course-panel { display:none; animation:fadeIn .3s ease; }
+.course-panel.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* COURSE HEADER */
+.course-header { display:flex; align-items:flex-start; gap:1.2rem; margin-bottom:1.8rem; padding-bottom:1.3rem; border-bottom:1px solid rgba(201,168,76,.18); }
+.course-header.ferrox-header { border-bottom-color:rgba(196,48,48,.2); }
+.course-header.acad-header { border-bottom-color:rgba(74,123,196,.2); }
+.course-icon-large { font-size:2.8rem; line-height:1; }
+.course-title { font-family:'Cinzel Decorative',cursive; font-size:clamp(1.1rem,2.5vw,1.8rem); color:var(--gold-light); line-height:1.2; margin-bottom:.25rem; }
+.course-title.ferrox-title { color:#e87070; }
+.course-title.acad-title { color:#70a0e8; }
+.course-meta { font-style:italic; font-size:.85rem; color:var(--muted); }
+
+/* TABS */
+.section-tabs { display:flex; gap:0; margin-bottom:1.2rem; border-bottom:1px solid rgba(201,168,76,.15); }
+.section-tab { padding:.55rem 1.2rem; font-family:'Cinzel Decorative',cursive; font-size:.55rem; letter-spacing:.15em; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .18s; text-transform:uppercase; }
+.section-tab:hover { color:var(--gold-light); }
+.section-tab.active { color:var(--gold-light); border-bottom-color:var(--gold); }
+.section-tab.tab-ferrox.active { color:#e87070; border-bottom-color:var(--accent-ferrox-light); }
+.section-tab.tab-acad.active { color:#70a0e8; border-bottom-color:var(--accent-acad-light); }
+.tab-content { display:none; }
+.tab-content.active { display:block; animation:fadeIn .25s ease; }
+
+/* EDITOR */
+.editor-toolbar { display:flex; gap:3px; background:rgba(201,168,76,.04); border:1px solid rgba(201,168,76,.13); border-bottom:none; padding:5px 7px; border-radius:3px 3px 0 0; flex-wrap:wrap; }
+.editor-toolbar.ferrox-toolbar { background:rgba(122,31,31,.05); border-color:rgba(196,48,48,.15); }
+.editor-toolbar.acad-toolbar { background:rgba(31,61,122,.05); border-color:rgba(74,123,196,.15); }
+.toolbar-btn { background:none; border:1px solid transparent; color:var(--muted); cursor:pointer; padding:3px 7px; border-radius:3px; font-size:11px; font-family:inherit; transition:all .14s; }
+.toolbar-btn:hover { background:rgba(201,168,76,.08); border-color:rgba(201,168,76,.18); color:var(--gold-light); }
+.toolbar-sep { width:1px; background:rgba(201,168,76,.12); margin:2px 3px; align-self:stretch; }
+.course-editor { width:100%; min-height:340px; background:rgba(8,6,2,.7); border:1px solid rgba(201,168,76,.18); border-radius:0 0 3px 3px; padding:1.1rem; color:var(--parchment); font-family:'IM Fell English',serif; font-size:.97rem; line-height:1.85; resize:vertical; outline:none; transition:border-color .2s; }
+.course-editor.ferrox-editor { border-color:rgba(196,48,48,.18); }
+.course-editor.acad-editor { border-color:rgba(74,123,196,.18); }
+.course-editor:focus { border-color:rgba(201,168,76,.35); }
+.course-editor.ferrox-editor:focus { border-color:rgba(196,48,48,.4); }
+.course-editor.acad-editor:focus { border-color:rgba(74,123,196,.4); }
+.course-editor::placeholder { color:rgba(122,106,79,.45); font-style:italic; }
+
+/* IMAGES */
+.image-upload-zone { border:1.5px dashed rgba(201,168,76,.25); border-radius:4px; padding:1.5rem; text-align:center; cursor:pointer; transition:all .2s; margin-bottom:1.2rem; }
+.image-upload-zone:hover { border-color:rgba(201,168,76,.5); background:rgba(201,168,76,.03); }
+.image-upload-zone.ferrox-zone { border-color:rgba(196,48,48,.25); }
+.image-upload-zone.ferrox-zone:hover { border-color:rgba(196,48,48,.5); }
+.image-upload-zone.acad-zone { border-color:rgba(74,123,196,.25); }
+.image-upload-zone.acad-zone:hover { border-color:rgba(74,123,196,.5); }
+.upload-icon { font-size:2rem; margin-bottom:.5rem; opacity:.6; }
+.upload-text { font-size:.85rem; color:var(--muted); font-style:italic; }
+.upload-btn-label { display:inline-block; margin-top:.6rem; padding:.4rem 1.2rem; border:1px solid rgba(201,168,76,.3); border-radius:3px; font-family:'Cinzel Decorative',cursive; font-size:.55rem; letter-spacing:.15em; color:var(--gold); cursor:pointer; transition:all .18s; text-transform:uppercase; }
+.upload-btn-label.ferrox-label { border-color:rgba(196,48,48,.3); color:#e87070; }
+.upload-btn-label.acad-label { border-color:rgba(74,123,196,.3); color:#70a0e8; }
+input[type="file"] { display:none; }
+.image-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin-bottom:1rem; }
+.image-card { position:relative; border-radius:4px; overflow:hidden; border:1px solid rgba(201,168,76,.15); background:rgba(8,6,2,.5); aspect-ratio:4/3; }
+.image-card img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .2s; cursor:pointer; }
+.image-card:hover img { transform:scale(1.04); }
+.image-card-overlay { position:absolute; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; gap:8px; opacity:0; transition:opacity .18s; }
+.image-card:hover .image-card-overlay { opacity:1; }
+.img-action-btn { background:rgba(10,8,3,.8); border:1px solid rgba(201,168,76,.3); color:var(--gold-light); font-size:11px; padding:4px 8px; border-radius:3px; cursor:pointer; font-family:inherit; transition:all .15s; }
+.img-action-btn:hover { background:rgba(201,168,76,.15); }
+.img-action-btn.del { border-color:rgba(196,48,48,.4); color:#e87070; }
+.img-action-btn.del:hover { background:rgba(122,31,31,.2); }
+.image-caption-wrap { padding:4px 6px; background:rgba(8,6,2,.4); border-top:1px solid rgba(201,168,76,.08); }
+.image-caption-input { width:100%; background:none; border:none; color:var(--muted); font-family:'IM Fell English',serif; font-size:.75rem; font-style:italic; outline:none; }
+.image-caption-input::placeholder { color:rgba(122,106,79,.4); }
+
+/* LIGHTBOX */
+.lightbox { display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.92); align-items:center; justify-content:center; }
+.lightbox.open { display:flex; }
+.lightbox img { max-width:90vw; max-height:85vh; object-fit:contain; border:1px solid rgba(201,168,76,.2); border-radius:4px; }
+.lightbox-close { position:absolute; top:1.5rem; right:2rem; font-family:'Cinzel Decorative',cursive; font-size:.7rem; color:var(--gold); cursor:pointer; letter-spacing:.15em; background:rgba(10,8,3,.8); padding:.4rem .8rem; border:1px solid rgba(201,168,76,.25); border-radius:3px; }
+
+/* SAVE ROW */
+.save-row { display:flex; align-items:center; justify-content:space-between; margin-top:1rem; gap:1rem; }
+.save-btn { background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04)); border:1px solid rgba(201,168,76,.35); color:var(--gold-light); font-family:'Cinzel Decorative',cursive; font-size:.58rem; letter-spacing:.15em; padding:.6rem 1.5rem; cursor:pointer; border-radius:2px; transition:all .18s; text-transform:uppercase; }
+.save-btn:hover { background:linear-gradient(135deg,rgba(201,168,76,.22),rgba(201,168,76,.08)); }
+.save-btn.ferrox-save { border-color:rgba(196,48,48,.35); color:#e87070; background:linear-gradient(135deg,rgba(122,31,31,.12),rgba(122,31,31,.04)); }
+.save-btn.acad-save { border-color:rgba(74,123,196,.35); color:#70a0e8; background:linear-gradient(135deg,rgba(31,61,122,.12),rgba(31,61,122,.04)); }
+.save-btn:disabled { opacity:.4; cursor:not-allowed; }
+.empty-hint { margin-top:1.5rem; padding:1.2rem; border:1px dashed rgba(201,168,76,.12); border-radius:3px; text-align:center; color:var(--muted); font-style:italic; font-size:.85rem; line-height:1.7; }
+.empty-hint.ferrox-hint { border-color:rgba(196,48,48,.12); }
+.empty-hint.acad-hint { border-color:rgba(74,123,196,.12); }
+
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:2px; }
+
+@media (max-width:720px) {
+  .main-layout { flex-direction:column; }
+  nav { width:100%; height:auto; position:static; border-right:none; border-bottom:1px solid rgba(201,168,76,.12); padding:.8rem 0; display:flex; flex-direction:row; overflow-x:auto; }
+  .nav-title { display:none; }
+  .nav-item { flex-direction:column; gap:.2rem; padding:.4rem .8rem; border-left:none; border-bottom:2px solid transparent; font-size:.75rem; white-space:nowrap; }
+  .nav-item.active { border-left:none; border-bottom-color:var(--gold); }
+  .nav-item.active-ferrox-item { border-left:none; border-bottom-color:var(--accent-ferrox-light); }
+  .nav-item.active-acad-item { border-left:none; border-bottom-color:var(--accent-acad-light); }
+  .content-area { padding:1.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="bg-ambiance"></div>
+<div id="sync-dot" title="État de la synchronisation"></div>
+
+<!-- SETUP OVERLAY -->
+<div id="setup-overlay">
+  <div class="setup-box">
+    <div class="setup-title">⚙ Configuration Supabase</div>
+    <div class="setup-sub">Pour que tes sauvegardes fonctionnent partout, tu dois connecter ta base de données Supabase.<br>C'est gratuit et ne prend que 2 minutes.</div>
+    <div class="setup-steps">
+      <p>
+        <span class="step-num">1.</span> Va sur <a href="https://supabase.com" target="_blank">supabase.com</a> → crée un compte gratuit<br>
+        <span class="step-num">2.</span> Crée un nouveau projet (attends ~1 minute)<br>
+        <span class="step-num">3.</span> Va dans <strong>SQL Editor</strong> et colle le contenu de <code>setup.sql</code> (fourni avec ce fichier)<br>
+        <span class="step-num">4.</span> Va dans <strong>Settings → API</strong> et copie l'URL et la clé <em>anon public</em><br>
+        <span class="step-num">5.</span> Colle-les ci-dessous
+      </p>
+    </div>
+    <div class="setup-field">
+      <label class="setup-label">Project URL</label>
+      <input class="setup-input" id="input-url" type="url" placeholder="https://xxxxxxxxxxxxxx.supabase.co">
+    </div>
+    <div class="setup-field">
+      <label class="setup-label">Anon Public Key</label>
+      <input class="setup-input" id="input-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+    </div>
+    <button class="setup-btn" onclick="connectSupabase()">✦ Connecter et lancer le site</button>
+    <div class="setup-error" id="setup-error"></div>
+  </div>
+</div>
+
+<!-- SITE -->
+<div class="site-wrapper">
+  <header>
+    <span class="header-ornament">✦ ✦ ✦</span>
+    <div class="school-name">École des Arts Arcanes</div>
+    <div class="school-subtitle">Grimoire Pédagogique — GTA RP</div>
+    <div class="header-rule"><span>❧</span></div>
+  </header>
+
+  <div class="rubrique-bar">
+    <div class="rubrique-tab active-matieres" id="tab-matieres" onclick="switchRubrique('matieres')">📚 Matières</div>
+    <div class="rubrique-sep"></div>
+    <div class="rubrique-tab" id="tab-ferrox" onclick="switchRubrique('ferrox')">🩸 Connaissance Ferrox</div>
+    <div class="rubrique-sep"></div>
+    <div class="rubrique-tab" id="tab-academie" onclick="switchRubrique('academie')">🏛️ Connaissances Académie</div>
+  </div>
+
+  <!-- MATIERES -->
+  <div id="rubrique-matieres" class="rubrique-panel active">
+    <div class="main-layout">
+      <nav id="nav-matieres"><div class="nav-title">Matières</div></nav>
+      <div class="content-area" id="content-matieres"></div>
+    </div>
+  </div>
+
+  <!-- FERROX -->
+  <div id="rubrique-ferrox" class="rubrique-panel">
+    <div class="main-layout">
+      <nav class="ferrox-nav" id="nav-ferrox"><div class="nav-title" style="color:#7a3a3a;border-bottom-color:rgba(196,48,48,.12)">Ferrox</div></nav>
+      <div class="content-area" id="content-ferrox"></div>
+    </div>
+  </div>
+
+  <!-- ACADEMIE -->
+  <div id="rubrique-academie" class="rubrique-panel">
+    <div class="main-layout">
+      <nav class="academie-nav" id="nav-academie"><div class="nav-title" style="color:#3a5a7a;border-bottom-color:rgba(74,123,196,.12)">Académie</div></nav>
+      <div class="content-area" id="content-academie"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-close" onclick="closeLightbox()">✕ Fermer</div>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- STATUS TOASTS -->
+<div id="status-bar"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const MATIERES = [
+  {id:'sortileges',icon:'⚡',label:'Sortilèges',meta:"L'art du geste et de la parole magique"},
+  {id:'potions',icon:'⚗️',label:'Potions',meta:"L'alchimie des ingrédients et formules"},
+  {id:'botanique',icon:'🌿',label:'Botanique',meta:"Les plantes magiques et leurs propriétés"},
+  {id:'discipline',icon:'📜',label:'Discipline & Morale Éducative',meta:"Les règles de la vie en communauté"},
+  {id:'culinaire',icon:'🍵',label:'Survie Culinaire',meta:"L'art de se nourrir dans le monde magique"},
+  {id:'dcfo',icon:'🛡️',label:'DCFO',meta:"Défense Contre les Forces Obscures"},
+  {id:'histoire',icon:'📖',label:'Histoire de la Magie',meta:"Les grandes chroniques du monde magique"},
+  {id:'vol',icon:'🧹',label:'Vol',meta:"La maîtrise des balais et des hauteurs"},
+  {id:'creatures',icon:'🐉',label:'Créatures Magiques',meta:"Soins, comportements et classifications"},
+  {id:'divination',icon:'🔮',label:'Divination',meta:"L'art de lire le passé, le présent, l'avenir"}
+];
+const FERROX_COURSES = [
+  {id:'ferrox-histoire',icon:'📜',label:'Histoire Ferrox',meta:"Les origines et l'histoire de la maison Ferrox",type:'ferrox'},
+  {id:'ferrox-rituels',icon:'🩸',label:'Rituels & Sang',meta:"Les rites et cérémonies Ferrox",type:'ferrox'},
+  {id:'ferrox-armes',icon:'⚔️',label:'Armes & Combat',meta:"Techniques martiales et armement",type:'ferrox'},
+  {id:'ferrox-alchimie',icon:'🔥',label:'Alchimie Sombre',meta:"Formules et transmutations avancées",type:'ferrox'},
+  {id:'ferrox-codes',icon:'🦅',label:'Codes & Lois',meta:"La loi interne Ferrox",type:'ferrox'},
+  {id:'ferrox-membres',icon:'🩻',label:'Hiérarchie',meta:"Organisation et grades de la maison",type:'ferrox'},
+  {id:'ferrox-cartographie',icon:'🗺️',label:'Cartographie',meta:"Territoires et lieux Ferrox",type:'ferrox'},
+  {id:'ferrox-divers',icon:'📁',label:'Divers',meta:"Notes et documents divers",type:'ferrox'}
+];
+const ACADEMIE_COURSES = [
+  {id:'acad-regles',icon:'📋',label:'Règles & Statuts',meta:"Règlement interne de l'Académie",type:'academie'},
+  {id:'acad-cours',icon:'🎓',label:'Programmes',meta:"Programmes et cursus académiques",type:'academie'},
+  {id:'acad-examens',icon:'✏️',label:'Examens',meta:"Épreuves, critères et résultats",type:'academie'},
+  {id:'acad-professeurs',icon:'👤',label:'Professeurs',meta:"Fiches du corps enseignant",type:'academie'},
+  {id:'acad-evenements',icon:'🌟',label:'Événements',meta:"Calendrier et événements officiels",type:'academie'},
+  {id:'acad-cartographie',icon:'🗺️',label:'Cartographie',meta:"Plans et lieux de l'Académie",type:'academie'},
+  {id:'acad-archives',icon:'🗄️',label:'Archives',meta:"Documents historiques et archivés",type:'academie'},
+  {id:'acad-divers',icon:'📁',label:'Divers',meta:"Notes et documents divers",type:'academie'}
+];
+const ALL_COURSES = [...MATIERES,...FERROX_COURSES,...ACADEMIE_COURSES];
+
+// ============================================================
+// SUPABASE
+// ============================================================
+let sb = null;
+const imageStore = {};
+let saveTimers = {};
+
+async function connectSupabase() {
+  const url = document.getElementById('input-url').value.trim();
+  const key = document.getElementById('input-key').value.trim();
+  const errEl = document.getElementById('setup-error');
+  errEl.textContent = '';
+  if (!url || !key) { errEl.textContent = 'Remplis les deux champs.'; return; }
+  try {
+    sb = supabase.createClient(url, key);
+    const {error} = await sb.from('notes').select('id').limit(1);
+    if (error) throw error;
+    localStorage.setItem('sb_url', url);
+    localStorage.setItem('sb_key', key);
+    document.getElementById('setup-overlay').classList.add('hidden');
+    toast('Connecté à Supabase ✓', 'success');
+    setSyncDot('ok');
+    await loadAllData();
+  } catch(e) {
+    errEl.textContent = 'Erreur : ' + (e.message || 'Vérifie l\'URL et la clé, et que le SQL a bien été exécuté.');
+    setSyncDot('err');
+  }
+}
+
+async function initSupabase() {
+  const url = localStorage.getItem('sb_url');
+  const key = localStorage.getItem('sb_key');
+  if (!url || !key) return;
+  try {
+    sb = supabase.createClient(url, key);
+    const {error} = await sb.from('notes').select('id').limit(1);
+    if (error) throw error;
+    document.getElementById('setup-overlay').classList.add('hidden');
+    setSyncDot('ok');
+    await loadAllData();
+  } catch(e) {
+    localStorage.removeItem('sb_url');
+    localStorage.removeItem('sb_key');
+    setSyncDot('err');
+  }
+}
+
+// ============================================================
+// DATA LOAD / SAVE
+// ============================================================
+async function loadAllData() {
+  if (!sb) return;
+  setSyncDot('syncing');
+  try {
+    // Load notes
+    const {data:notes, error:ne} = await sb.from('notes').select('*');
+    if (ne) throw ne;
+    (notes||[]).forEach(n => {
+      const ta = document.getElementById('editor-'+n.id);
+      if (ta) ta.value = n.content || '';
+    });
+    // Load images
+    const {data:imgs, error:ie} = await sb.from('images').select('*').order('position');
+    if (ie) throw ie;
+    (imgs||[]).forEach(img => {
+      if (!imageStore[img.course_id]) imageStore[img.course_id] = [];
+      imageStore[img.course_id].push({dbid:img.id, src:img.src, caption:img.caption||''});
+    });
+    ALL_COURSES.forEach(c => renderGrid(c.id));
+    setSyncDot('ok');
+  } catch(e) {
+    toast('Erreur de chargement : '+e.message, 'error');
+    setSyncDot('err');
+  }
+}
+
+async function saveCourse(id) {
+  const ta = document.getElementById('editor-'+id);
+  if (!ta || !sb) return;
+  setSyncDot('syncing');
+  try {
+    const {error} = await sb.from('notes').upsert({id, content: ta.value, updated_at: new Date().toISOString()});
+    if (error) throw error;
+    toast('Cours sauvegardé ✓', 'success');
+    setSyncDot('ok');
+  } catch(e) {
+    toast('Erreur sauvegarde : '+e.message, 'error');
+    setSyncDot('err');
+  }
+}
+
+function scheduleAutoSave(id) {
+  clearTimeout(saveTimers[id]);
+  saveTimers[id] = setTimeout(() => saveCourse(id), 2000);
+}
+
+async function addImages(courseId, input) {
+  if (!sb) { toast('Non connecté à Supabase', 'error'); return; }
+  const files = Array.from(input.files);
+  if (!imageStore[courseId]) imageStore[courseId] = [];
+  for (const file of files) {
+    const b64 = await readFile(file);
+    // Store image as base64 in DB (works for reasonable sizes)
+    const pos = imageStore[courseId].length;
+    setSyncDot('syncing');
+    try {
+      const {data, error} = await sb.from('images').insert({course_id:courseId, src:b64, caption:'', position:pos}).select().single();
+      if (error) throw error;
+      imageStore[courseId].push({dbid:data.id, src:b64, caption:''});
+      renderGrid(courseId);
+      toast('Image ajoutée ✓', 'success');
+      setSyncDot('ok');
+    } catch(e) {
+      toast('Erreur image : '+e.message, 'error');
+      setSyncDot('err');
+    }
+  }
+  input.value = '';
+}
+
+function readFile(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function deleteImage(courseId, idx) {
+  const img = (imageStore[courseId]||[])[idx];
+  if (!img || !sb) return;
+  setSyncDot('syncing');
+  try {
+    const {error} = await sb.from('images').delete().eq('id', img.dbid);
+    if (error) throw error;
+    imageStore[courseId].splice(idx, 1);
+    renderGrid(courseId);
+    toast('Image supprimée', 'info');
+    setSyncDot('ok');
+  } catch(e) {
+    toast('Erreur suppression : '+e.message, 'error');
+    setSyncDot('err');
+  }
+}
+
+async function updateCaption(courseId, idx, val) {
+  const img = (imageStore[courseId]||[])[idx];
+  if (!img || !sb) return;
+  img.caption = val;
+  clearTimeout(img._captionTimer);
+  img._captionTimer = setTimeout(async () => {
+    try { await sb.from('images').update({caption:val}).eq('id',img.dbid); } catch(e) {}
+  }, 1500);
+}
+
+// ============================================================
+// BUILD UI
+// ============================================================
+function buildPanel(course, rubrique) {
+  const isF = rubrique==='ferrox', isA = rubrique==='academie';
+  const toolSuf = isF?' ferrox-toolbar':isA?' acad-toolbar':'';
+  const edSuf = isF?' ferrox-editor':isA?' acad-editor':'';
+  const zoneSuf = isF?' ferrox-zone':isA?' acad-zone':'';
+  const labSuf = isF?' ferrox-label':isA?' acad-label':'';
+  const savSuf = isF?' ferrox-save':isA?' acad-save':'';
+  const hintSuf = isF?' ferrox-hint':isA?' acad-hint':'';
+  const titSuf = isF?' ferrox-title':isA?' acad-title':'';
+  const hdSuf = isF?' ferrox-header':isA?' acad-header':'';
+  const tabSuf = isF?' tab-ferrox':isA?' tab-acad':'';
+  const iconBtns = [course.icon,'✦','📌','⚠️'].map(e=>`<button class="toolbar-btn" onclick="ins('${course.id}','${e} ')">${e}</button>`).join('');
+  return `
+  <div id="panel-${course.id}" class="course-panel">
+    <div class="course-header${hdSuf}">
+      <div class="course-icon-large">${course.icon}</div>
+      <div><div class="course-title${titSuf}">${course.label}</div><div class="course-meta">${course.meta}</div></div>
+    </div>
+    <div class="section-tabs">
+      <div class="section-tab${tabSuf} active" onclick="switchTab('${course.id}','notes',this)">✒ Notes</div>
+      <div class="section-tab${tabSuf}" onclick="switchTab('${course.id}','images',this)">🖼 Images</div>
+    </div>
+    <div id="tab-${course.id}-notes" class="tab-content active">
+      <div class="editor-toolbar${toolSuf}">
+        <button class="toolbar-btn" onclick="ins('${course.id}','# ')">Titre</button>
+        <button class="toolbar-btn" onclick="ins('${course.id}','## ')">Sous-titre</button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" onclick="ins('${course.id}','• ')">Liste</button>
+        <button class="toolbar-btn" onclick="ins('${course.id}','— ')">Point</button>
+        <div class="toolbar-sep"></div>
+        ${iconBtns}
+      </div>
+      <textarea class="course-editor${edSuf}" id="editor-${course.id}" placeholder="Rédigez vos notes pour ${course.label} ici..." oninput="scheduleAutoSave('${course.id}')"></textarea>
+      <div class="save-row">
+        <button class="save-btn${savSuf}" onclick="saveCourse('${course.id}')">✦ Sauvegarder</button>
+        <span style="font-style:italic;font-size:.82rem;color:var(--muted)">Sauvegarde auto après 2s d'inactivité</span>
+      </div>
+    </div>
+    <div id="tab-${course.id}-images" class="tab-content">
+      <div class="image-upload-zone${zoneSuf}" onclick="document.getElementById('file-${course.id}').click()">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-text">Glissez des images ou cliquez pour en ajouter</div>
+        <span class="upload-btn-label${labSuf}">Parcourir les fichiers</span>
+        <input type="file" id="file-${course.id}" accept="image/*" multiple onchange="addImages('${course.id}',this)">
+      </div>
+      <div class="image-grid" id="grid-${course.id}"></div>
+      <div class="empty-hint${hintSuf}" id="empty-${course.id}">Aucune image — ajoutez des illustrations, schémas ou captures pour ce cours.</div>
+    </div>
+  </div>`;
+}
+
+function buildNavItem(course, rubrique, isFirst) {
+  const activeClass = isFirst ? (rubrique==='ferrox'?'active-ferrox-item':rubrique==='academie'?'active-acad-item':'active') : '';
+  return `<div class="nav-item ${activeClass}" onclick="showCourse('${course.id}',this,'${rubrique}')"><span class="icon">${course.icon}</span><span class="label">${course.label}</span></div>`;
+}
+
+function buildAll() {
+  const configs = [
+    {courses:MATIERES, rubrique:'matieres'},
+    {courses:FERROX_COURSES, rubrique:'ferrox'},
+    {courses:ACADEMIE_COURSES, rubrique:'academie'}
+  ];
+  configs.forEach(({courses,rubrique}) => {
+    const nav = document.getElementById('nav-'+rubrique);
+    const content = document.getElementById('content-'+rubrique);
+    courses.forEach((c,i) => {
+      nav.insertAdjacentHTML('beforeend', buildNavItem(c, rubrique, i===0));
+      content.insertAdjacentHTML('beforeend', buildPanel(c, rubrique));
+    });
+    // Activate first panel
+    const first = document.getElementById('panel-'+courses[0].id);
+    if (first) first.classList.add('active');
+  });
+}
+
+// ============================================================
+// RENDER IMAGES
+// ============================================================
+function renderGrid(courseId) {
+  const grid = document.getElementById('grid-'+courseId);
+  const empty = document.getElementById('empty-'+courseId);
+  const imgs = imageStore[courseId] || [];
+  if (empty) empty.style.display = imgs.length ? 'none' : 'block';
+  if (!grid) return;
+  grid.innerHTML = '';
+  imgs.forEach((img,i) => {
+    const card = document.createElement('div');
+    card.className = 'image-card';
+    card.innerHTML = `
+      <img src="${img.src}" alt="Image ${i+1}" onclick="openLightbox('${courseId}',${i})">
+      <div class="image-card-overlay">
+        <button class="img-action-btn" onclick="openLightbox('${courseId}',${i})">🔍 Voir</button>
+        <button class="img-action-btn del" onclick="deleteImage('${courseId}',${i})">✕ Sup.</button>
+      </div>
+      <div class="image-caption-wrap">
+        <input class="image-caption-input" placeholder="Légende..." value="${img.caption||''}" oninput="updateCaption('${courseId}',${i},this.value)">
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function switchRubrique(name) {
+  ['matieres','ferrox','academie'].forEach(r => {
+    document.getElementById('rubrique-'+r).classList.remove('active');
+    document.getElementById('tab-'+r).className = 'rubrique-tab';
+  });
+  document.getElementById('rubrique-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active-'+name);
+}
+
+function showCourse(id, el, rubrique) {
+  document.getElementById('content-'+rubrique).querySelectorAll('.course-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('nav-'+rubrique).querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active','active-ferrox-item','active-acad-item'));
+  const panel = document.getElementById('panel-'+id);
+  if (panel) panel.classList.add('active');
+  const cls = rubrique==='ferrox'?'active-ferrox-item':rubrique==='academie'?'active-acad-item':'active';
+  el.classList.add(cls);
+  el.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+function switchTab(courseId, tabName, el) {
+  const panel = document.getElementById('panel-'+courseId);
+  panel.querySelectorAll('.section-tab').forEach(t=>t.classList.remove('active'));
+  panel.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+courseId+'-'+tabName).classList.add('active');
+}
+
+function ins(id, text) {
+  const ta = document.getElementById('editor-'+id);
+  if (!ta) return;
+  const s = ta.selectionStart, v = ta.value;
+  const lineStart = v.lastIndexOf('\n',s-1)+1;
+  const insert = s===lineStart ? text : '\n'+text;
+  ta.value = v.substring(0,s)+insert+v.substring(ta.selectionEnd);
+  ta.selectionStart = ta.selectionEnd = s+insert.length;
+  ta.focus();
+  scheduleAutoSave(id);
+}
+
+// ============================================================
+// LIGHTBOX
+// ============================================================
+function openLightbox(courseId, idx) {
+  const img = (imageStore[courseId]||[])[idx];
+  if (!img) return;
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function setSyncDot(state) {
+  const d = document.getElementById('sync-dot');
+  d.className = '';
+  d.classList.add(state);
+}
+
+function toast(msg, type='info') {
+  const bar = document.getElementById('status-bar');
+  const el = document.createElement('div');
+  el.className = 'status-toast '+type;
+  el.textContent = msg;
+  bar.appendChild(el);
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>el.classList.add('show')); });
+  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),400); }, 3000);
+}
+
+// ============================================================
+// DRAG & DROP
+// ============================================================
+function setupDragDrop() {
+  document.querySelectorAll('.image-upload-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor='rgba(201,168,76,.6)'; });
+    zone.addEventListener('dragleave', () => { zone.style.borderColor=''; });
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.style.borderColor='';
+      const courseId = zone.querySelector('input[type=file]').id.replace('file-','');
+      addImages(courseId, {files: e.dataTransfer.files});
+    });
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeLightbox(); });
+buildAll();
+setupDragDrop();
+ALL_COURSES.forEach(c => { if (!imageStore[c.id]) imageStore[c.id]=[]; });
+initSupabase();
+</script>
+</body>
+</html>
